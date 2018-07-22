@@ -52,16 +52,24 @@ SUB HandleKeyInput(KeyInput AS STRING)
     PreviousCursorY = CurrentCursorY
     CurrentCursorY = CurrentCursorY - 1
     IF CurrentCursorY < MinimumCursorY THEN CurrentCursorY = MinimumCursorY
-  ELSEIF KeyInput = KeyDown OR KeyInput = KeyEnter THEN
+  ELSEIF KeyInput = KeyDown THEN
     PreviousCursorY = CurrentCursorY
     CurrentCursorY = CurrentCursorY + 1
     IF CurrentCursorY > MaximumCursorY THEN CurrentCursorY = MaximumCursorY
-  ELSEIF KeyInput = KeyLeft OR KeyInput = KeyBackspace THEN
+  ELSEIF KeyInput = KeyLeft THEN
+    PreviousCursorY = CurrentCursorY
     CurrentCursorX = CurrentCursorX - 1
     IF CurrentCursorX < MinimumCursorX THEN CurrentCursorX = MinimumCursorX
   ELSEIF KeyInput = KeyRight THEN
+    PreviousCursorY = CurrentCursorY
     CurrentCursorX = CurrentCursorX + 1
     IF CurrentCursorX > MaximumCursorX THEN CurrentCursorX = MaximumCursorX
+  ELSEIF KeyInput = KeyHome THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = MinimumCursorX
+  ELSEIF KeyInput = KeyEnd THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = MaximumCursorX
   ELSEIF KeyInput = KeyCtrlUp THEN
     CurrentForegroundColor = CurrentForegroundColor - 1
     IF CurrentForegroundColor < MinimumForegroundColor THEN CurrentForegroundColor = MaximumForegroundColor
@@ -84,6 +92,19 @@ SUB HandleKeyInput(KeyInput AS STRING)
     DrawCharacter(KeyInput)
   ELSEIF IsInKeyRange(KeyInput, 32, 47) OR IsInKeyRange(KeyInput, 58, 126) THEN
     DrawTypedCharacter(KeyInput)
+  ELSEIF KeyInput = KeyBackspace THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = CurrentCursorX - 1
+    IF CurrentCursorX < MinimumCursorX THEN CurrentCursorX = MinimumCursorX
+    ResetCharacter()
+  ELSEIF KeyInput = KeyEnter THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorY = CurrentCursorY + 1
+    IF CurrentCursorY > MaximumCursorY THEN
+      CurrentCursorY = MaximumCursorY
+    ELSE
+      CurrentCursorX = MinimumCursorX
+    END IF
   ELSEIF KeyInput = KeyCtrlN THEN
     InitializeNewDrawing()
     RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
@@ -99,6 +120,13 @@ SUB HandleKeyInput(KeyInput AS STRING)
     END IF
   ELSEIF KeyInput = KeyCtrlF THEN
     ShowFullDrawing()
+  ELSEIF KeyInput = KeyCtrlE THEN
+    ExportDrawing()
+    IF StatusAtTop THEN
+      RedrawRegion(1, 1, 80, 1)
+    ELSE
+      RedrawRegion(1, 25, 80, 25)
+    END IF
   ELSEIF KeyInput = KeyDelete THEN
     ResetCharacter()
   ELSEIF KeyInput = KeyF1 THEN
@@ -193,16 +221,9 @@ SUB DrawTypedCharacter(KeyInput AS STRING)
   COLOR CurrentForegroundColor, CurrentBackgroundColor
   PRINT KeyInput;
 
+  PreviousCursorY = CurrentCursorY
   CurrentCursorX = CurrentCursorX + 1
-  IF CurrentCursorX > MaximumCursorX THEN
-    CurrentCursorY = CurrentCursorY + 1
-    IF CurrentCursorY > MaximumCursorY THEN
-      CurrentCursorX = MaximumCursorX
-      CurrentCursorY = MaximumCursorY
-    ELSE
-      CurrentCursorX = MinimumCursorX
-    END IF
-  END IF
+  IF CurrentCursorX > MaximumCursorX THEN CurrentCursorX = MaximumCursorX
 END SUB
 
 SUB ShowFullDrawing()

@@ -20,8 +20,17 @@
 DECLARE SUB InitializeNewDrawing()
 DECLARE SUB SaveDrawing()
 DECLARE SUB LoadDrawing()
+DECLARE SUB ExportDrawing()
+DECLARE SUB ExportDrawingToAnsiText()
+DECLARE SUB ExportDrawingToText()
 DECLARE FUNCTION GetFileName() AS STRING
 DECLARE FUNCTION IsFileNameCharacter(FileName AS STRING, KeyInput AS STRING) AS BOOLEAN
+DECLARE FUNCTION ConvertColorCodeToAnsiColorCode(ColorCode AS BYTE) AS BYTE
+
+CONST AS BYTE WriteNoCodes = 0
+CONST AS BYTE WriteForegroundCode = 1
+CONST AS BYTE WriteBackgroundCode = 2
+CONST AS BYTE WriteBothCodes = 3
 
 SUB InitializeNewDrawing()
   CurrentCursorX = MinimumCursorX
@@ -43,6 +52,7 @@ SUB SaveDrawing()
   DIM AS STRING FileName = GetFileName()
   IF LEN(FileName) <= 0 THEN EXIT SUB
 
+  FileName = FileName + ".CPD"
   DIM AS ULONG CurrentFileNumber = FREEFILE
   OPEN FileName FOR BINARY AS #CurrentFileNumber
     PUT #CurrentFileNumber, , DrawingCanvas()
@@ -53,11 +63,119 @@ SUB LoadDrawing()
   DIM AS STRING FileName = GetFileName()
   IF LEN(FileName) <= 0 THEN EXIT SUB
 
-  DIM AS STRING ReadFileHeader
-
+  FileName = FileName + ".CPD"
   DIM AS ULONG CurrentFileNumber = FREEFILE
   OPEN FileName FOR BINARY AS #CurrentFileNumber
     GET #CurrentFileNumber, , DrawingCanvas()
+  CLOSE #CurrentFileNumber
+END SUB
+
+SUB ExportDrawing()
+  DIM AS STRING DialogText: DialogText = "Format (A)NSI, (T)ext: "
+  DIM AS BYTE DialogTextY = 25
+  IF StatusAtTop THEN DialogTextY = 1
+
+  LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT SPACE(80);
+  LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT DialogText;
+
+  DIM AS BOOLEAN ExitDialog = FALSE
+
+  LOCATE DialogTextY, (LEN(DialogText) + 1), 1
+
+  DO
+    DIM AS STRING KeyInput = INKEY()
+    IF UCASE(KeyInput) = "A" THEN
+      ExportDrawingToAnsiText()
+      ExitDialog = TRUE
+    ELSEIF UCASE(KeyInput) = "T" THEN
+      ExportDrawingToText()
+      ExitDialog = TRUE
+    ELSEIF KeyInput = KeyEscape THEN
+      ExitDialog = TRUE
+    END IF
+  LOOP UNTIL ExitDialog
+END SUB
+
+SUB ExportDrawingToAnsiText()
+  DIM AS STRING FileName = GetFileName()
+  IF LEN(FileName) <= 0 THEN EXIT SUB
+
+  DIM AS BYTE ExportCurrentForegroundColor = MaximumForegroundColor + 1
+  DIM AS BYTE ExportCurrentBackgroundColor = MaximumBackgroundColor + 1
+  DIM AS STRING CurrentWriteLine
+
+  FileName = FileName + ".ANS"
+  DIM AS ULONG CurrentFileNumber = FREEFILE
+  OPEN FileName FOR OUTPUT AS #CurrentFileNumber
+  FOR WriteLine AS BYTE = MinimumCursorY TO MaximumCursorY
+    FOR WriteCharacter AS BYTE = MinimumCursorX TO MaximumCursorX
+      DIM AS BYTE WriteCodeType = WriteNoCodes
+      IF DrawingCanvas(WriteCharacter, WriteLine).ForegroundColor <> ExportCurrentForegroundColor THEN
+        ExportCurrentForegroundColor = DrawingCanvas(WriteCharacter, WriteLine).ForegroundColor
+        WriteCodeType = WriteCodeType + WriteForegroundCode
+      END IF
+
+      IF DrawingCanvas(WriteCharacter, WriteLine).BackgroundColor <> ExportCurrentBackgroundColor THEN
+        ExportCurrentBackgroundColor = DrawingCanvas(WriteCharacter, WriteLine).BackgroundColor
+        WriteCodeType = WriteCodeType + WriteBackgroundCode
+      END IF
+
+      IF WriteCodeType > WriteNoCodes THEN
+        CurrentWriteLine = CurrentWriteLine + KeyEscape + "["
+        IF WriteCodeType = WriteForegroundCode THEN
+          IF ExportCurrentForegroundColor > 7 THEN
+            CurrentWriteLine = CurrentWriteLine + "1;"
+          ELSE
+            CurrentWriteLine = CurrentWriteLine + "0;"
+          END IF
+          CurrentWriteLine = CurrentWriteLine + "3"
+          CurrentWriteLine = CurrentWriteLine + TRIM(STR(ConvertColorCodeToAnsiColorCode(ExportCurrentForegroundColor MOD 8)))
+        ELSEIF WriteCodeType = WriteBackgroundCode THEN
+          CurrentWriteLine = CurrentWriteLine + "4"
+          CurrentWriteLine = CurrentWriteLine + TRIM(STR(ConvertColorCodeToAnsiColorCode(ExportCurrentBackgroundColor)))
+        ELSEIF WriteCodeType = WriteBothCodes THEN
+          IF ExportCurrentForegroundColor > 7 THEN
+            CurrentWriteLine = CurrentWriteLine + "1;"
+          ELSE
+            CurrentWriteLine = CurrentWriteLine + "0;"
+          END IF
+          CurrentWriteLine = CurrentWriteLine + "3"
+          CurrentWriteLine = CurrentWriteLine + TRIM(STR(ConvertColorCodeToAnsiColorCode(ExportCurrentForegroundColor MOD 8))) + ";"
+          CurrentWriteLine = CurrentWriteLine + "4"
+          CurrentWriteLine = CurrentWriteLine + TRIM(STR(ConvertColorCodeToAnsiColorCode(ExportCurrentBackgroundColor)))
+        END IF
+        CurrentWriteLine = CurrentWriteLine + "m"
+      END IF
+
+      CurrentWriteLine = CurrentWriteLine + CHR(DrawingCanvas(WriteCharacter, WriteLine).CharacterCode)
+    NEXT WriteCharacter
+
+    PRINT #CurrentFileNumber, CurrentWriteLine;
+    CurrentWriteLine = ""
+  NEXT WriteLine
+
+  PRINT #CurrentFileNumber, KeyEscape + "[0;37;40m"
+
+  CLOSE #CurrentFileNumber
+END SUB
+
+SUB ExportDrawingToText()
+  DIM AS STRING FileName = GetFileName()
+  IF LEN(FileName) <= 0 THEN EXIT SUB
+
+  DIM AS STRING CurrentWriteLine
+
+  FileName = FileName + ".TXT"
+  DIM AS ULONG CurrentFileNumber = FREEFILE
+  OPEN FileName FOR OUTPUT AS #CurrentFileNumber
+  FOR WriteLine AS BYTE = MinimumCursorY TO MaximumCursorY - 1
+    FOR WriteCharacter AS BYTE = MinimumCursorX TO MaximumCursorX - 1
+      CurrentWriteLine = CurrentWriteLine + CHR(DrawingCanvas(WriteCharacter, WriteLine).CharacterCode)
+    NEXT WriteCharacter
+
+    PRINT #CurrentFileNumber, CurrentWriteLine
+    CurrentWriteLine = ""
+  NEXT WriteLine
   CLOSE #CurrentFileNumber
 END SUB
 
@@ -97,7 +215,7 @@ FUNCTION GetFileName() AS STRING
   LOOP UNTIL ExitDialog
 
   IF ContinueFileOperation THEN
-    RETURN FileName + ".CPD"
+    RETURN FileName
   ELSE
     RETURN ""
   END IF
@@ -112,5 +230,28 @@ FUNCTION IsFileNameCharacter(FileName AS STRING, KeyInput AS STRING) AS BOOLEAN
   IF KeyInput = "_" THEN RETURN TRUE
 
   RETURN FALSE
+END FUNCTION
+
+FUNCTION ConvertColorCodeToAnsiColorCode(ColorCode AS BYTE) AS BYTE
+  DIM AS BYTE AnsiColorCode = 0
+
+  SELECT CASE ColorCode
+    CASE 1
+      AnsiColorCode = 4
+    CASE 2
+      AnsiColorCode = 2
+    CASE 3
+      AnsiColorCode = 6
+    CASE 4
+      AnsiColorCode = 1
+    CASE 5
+      AnsiColorCode = 5
+    CASE 6
+      AnsiColorCode = 3
+    CASE 7
+      AnsiColorCode = 7
+  END SELECT
+
+  RETURN AnsiColorCode
 END FUNCTION
 

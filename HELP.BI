@@ -15,11 +15,11 @@
 ' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 DECLARE SUB ShowHelp()
 
-DIM SHARED AS STRING HelpText(21)
+DIM SHARED AS STRING HelpText(23)
 HelpText(1) = "Welcome to Cobalt!"
-HelpText(2) = ""
-HelpText(3) = "Keyboard: "
-HelpText(4) = "                 Arrows : Move Cursor"
+HelpText(2) = "                 Arrows : Move Cursor"
+HelpText(3) = "                   Home : Move to beginning of line"
+HelpText(4) = "                    End : Move to end of line"
 HelpText(5) = " CTRL+Left / CTRL+Right : Change Background Color"
 HelpText(6) = " CTRL+Up   /  CTRL+Down : Change Foreground Color"
 HelpText(7) = " ALT+Up    /   ALT+Down : Change Character Set"
@@ -31,34 +31,26 @@ HelpText(12) = "                 CTRL+N : New Drawing"
 HelpText(13) = "                 CTRL+S : Save Drawing"
 HelpText(14) = "                 CTRL+O : Open Drawing"
 HelpText(15) = "                 CTRL+F : Show Full Drawing"
-HelpText(16) = "                    ESC : Exit"
-HelpText(17) = ""
-HelpText(18) = "    Cobalt Copyright (C) 2018 Jonathon Gosselin"
-HelpText(19) = "    This program comes with ABSOLUTELY NO WARRANTY."
-HelpText(20) = "    This is free software, and you are welcome to redistribute it"
-HelpText(21) = "    under certain conditions.  See LICENSE.TXT for more information."
+HelpText(16) = "                 CTRL+E : Export Drawing"
+HelpText(17) = "                    ESC : Exit"
+HelpText(18) = ""
+HelpText(19) = ""
+HelpText(20) = "    Cobalt Copyright (C) 2018 Jonathon Gosselin"
+HelpText(21) = "    This program comes with ABSOLUTELY NO WARRANTY."
+HelpText(22) = "    This is free software, and you are welcome to redistribute it"
+HelpText(23) = "    under certain conditions.  See LICENSE.TXT for more information."
 
-SUB ShowHelp
+SUB ShowHelp()
   LOCATE 1, 1, 0
   COLOR 7, 0
 
-  DIM AS BYTE LineCount = UBOUND(HelpText)
-  DIM AS BYTE LinePadCount = 23 - LineCount
-
   PRINT CHR(201); STRING(78, 205); CHR(187);
-
   FOR WriteHelpText AS BYTE = 1 TO UBOUND(HelpText)
     LOCATE (WriteHelpText + 1), 1
 
     DIM AS BYTE PadRight = 77 - LEN(HelpText(WriteHelpText))
-    PRINT CHR(186); " "; HelpText(WriteHelpText); STRING(PadRight, 32); CHR(186)
+    PRINT CHR(186); " "; HelpText(WriteHelpText); STRING(PadRight, 32); CHR(186);
   NEXT WriteHelpText
-
-  FOR WriteWhiteSpace AS BYTE = 1 TO LinePadCount
-    LOCATE (LineCount + WriteWhiteSpace + 1), 1
-    PRINT CHR(186); SPACE(78); CHR(186);
-  NEXT WriteWhiteSpace
-
   PRINT CHR(200); STRING(78, 205); CHR(188);
 
   DO:LOOP WHILE INKEY() = ""
