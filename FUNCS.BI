@@ -13,8 +13,11 @@
 
 ' You should have received a copy of the GNU General Public License
 ' along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#INCLUDE ONCE "GLOBAL.BI"
+
 DECLARE FUNCTION PadLeft(InputValue AS BYTE, TargetLength AS INTEGER, PadCharacter AS STRING) AS STRING
-DECLARE FUNCTION IsInKeyRange(KeyInput AS STRING, StartRange AS BYTE, EndRange AS BYTE) AS BOOLEAN
+DECLARE FUNCTION IsInKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange AS UBYTE) AS BOOLEAN
+DECLARE FUNCTION GetConfirmation(ConfirmationText AS STRING) AS BOOLEAN
 
 FUNCTION PadLeft(InputValue AS BYTE, TargetLength AS INTEGER, PadCharacter AS STRING) AS STRING
   DIM AS STRING InputValueString = STR(InputValue)
@@ -32,10 +35,32 @@ FUNCTION PadLeft(InputValue AS BYTE, TargetLength AS INTEGER, PadCharacter AS ST
   RETURN OutputValue
 END FUNCTION
 
-FUNCTION IsInKeyRange(KeyInput AS STRING, StartRange AS BYTE, EndRange AS BYTE) AS BOOLEAN
+FUNCTION IsInKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange AS UBYTE) AS BOOLEAN
   IF NOT LEN(KeyInput) = 1 THEN RETURN FALSE
 
-  DIM AS BYTE KeyInputCode = ASC(KeyInput)
+  DIM AS UBYTE KeyInputCode = ASC(KeyInput)
   RETURN KeyInputCode >= StartRange AND KeyInputCode <= EndRange
+END FUNCTION
+
+FUNCTION GetConfirmation(DialogText AS STRING) AS BOOLEAN
+  DIM AS BYTE DialogLocation = 25
+  IF StatusAtTop THEN DialogLocation = 1
+
+  LOCATE DialogLocation, 1, 0: COLOR 7, 0: PRINT SPACE(80);
+  LOCATE DialogLocation, 1, 1: COLOR 12, 0: PRINT DialogText; " (Y/N) ";
+
+  DIM AS BOOLEAN DialogResult = FALSE
+  DIM AS BOOLEAN ExitDialog = FALSE
+  DO
+    DIM AS STRING KeyInput = UCASE(INKEY())
+    IF KeyInput = "Y" THEN
+      ExitDialog = TRUE
+      DialogResult = TRUE
+    ELSEIF KeyInput = "N" ORELSE KeyInput = KeyEscape THEN
+      ExitDialog = TRUE
+    END IF
+  LOOP UNTIL ExitDialog
+
+  RETURN DialogResult
 END FUNCTION
 

@@ -106,11 +106,15 @@ SUB HandleKeyInput(KeyInput AS STRING)
       CurrentCursorX = MinimumCursorX
     END IF
   ELSEIF KeyInput = KeyCtrlN THEN
-    InitializeNewDrawing()
-    RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    IF GetConfirmation("Start a new drawing?") THEN
+      InitializeNewDrawing()
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
   ELSEIF KeyInput = KeyCtrlO THEN
-    LoadDrawing()
-    RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    IF GetConfirmation("Load a drawing?") THEN
+      LoadDrawing()
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
   ELSEIF KeyInput = KeyCtrlS THEN
     SaveDrawing()
     IF StatusAtTop THEN
@@ -127,13 +131,18 @@ SUB HandleKeyInput(KeyInput AS STRING)
     ELSE
       RedrawRegion(1, 25, 80, 25)
     END IF
-  ELSEIF KeyInput = KeyDelete THEN
-    ResetCharacter()
+  ELSEIF KeyInput = KeyCtrlI THEN
+    IF GetConfirmation("Import a drawing?") THEN
+      ImportDrawing()
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
   ELSEIF KeyInput = KeyF1 THEN
     ShowHelp()
     RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+  ELSEIF KeyInput = KeyDelete THEN
+    ResetCharacter()
   ELSEIF KeyInput = KeyEscape THEN
-    ExitApplication = TRUE
+    ExitApplication = GetConfirmation("Exit Cobalt?")
   END IF
 
   UpdateStatus()

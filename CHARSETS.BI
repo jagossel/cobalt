@@ -32,7 +32,7 @@ DIM SHARED AS STRING CharacterSets(MinimumCharacterSetIndex TO MaximumCharacterS
 
 FOR ReadCharacterSetY AS BYTE = MinimumCharacterSetIndex TO MaximumCharacterSetIndex
   FOR ReadCharacterSetX AS BYTE = 1 TO 10
-    DIM AS BYTE CharacterCode
+    DIM AS UBYTE CharacterCode
     READ CharacterCode
 
     CharacterSets(ReadCharacterSetY, ReadCharacterSetX) = CHR(CharacterCode)
