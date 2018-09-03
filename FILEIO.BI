@@ -128,7 +128,7 @@ SUB ExportDrawingToAnsiText(FileName AS STRING)
 
             IF DrawingCanvas(WriteCursorX, WriteCursorY).ForegroundColor >= 8 ANDALSO CurrentExportForegroundColor <= 7 THEN
               PRINT #CurrentFileNumber, CHR(49); CHR(59);
-            ELSEIF DrawingCanvas(WriteCursorX, WriteCursorY).ForegroundColor <= 7 ANDALSO CurrentExportForegroundColor <= 8 THEN
+            ELSEIF DrawingCanvas(WriteCursorX, WriteCursorY).ForegroundColor <= 7 ANDALSO CurrentExportForegroundColor >= 8 THEN
               PRINT #CurrentFileNumber, CHR(48); CHR(59);
             END IF
 
@@ -151,6 +151,9 @@ SUB ExportDrawingToAnsiText(FileName AS STRING)
           PRINT #CurrentFileNumber, CHR(DrawingCanvas(WriteCursorX, WriteCursorY).CharacterCode);
         NEXT WriteCursorX
       NEXT WriteCursorY
+
+      PRINT #CurrentFileNumber, KeyEscape; CHR(91); CHR(48); CHR(109);
+
       CLOSE #CurrentFileNumber
     ELSE
       DisplayFileError(FileName, ERR())
