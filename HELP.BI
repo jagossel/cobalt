@@ -15,7 +15,7 @@
 ' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 DECLARE SUB ShowHelp()
 
-DIM SHARED AS STRING HelpText(23)
+DIM SHARED AS STRING HelpText(25)
 HelpText(1) = "Welcome to Cobalt!"
 HelpText(2) = "                 Arrows : Move Cursor"
 HelpText(3) = "                   Home : Move to beginning of line"
@@ -34,24 +34,22 @@ HelpText(15) = "                 CTRL+F : Show Full Drawing"
 HelpText(16) = "                 CTRL+E : Export Drawing"
 HelpText(17) = "                 CTRL+I : Import Drawing"
 HelpText(18) = "                    ESC : Exit"
-HelpText(19) = ""
-HelpText(20) = "    Cobalt Copyright (C) 2018 Jonathon Gosselin"
-HelpText(21) = "    This program comes with ABSOLUTELY NO WARRANTY."
-HelpText(22) = "    This is free software, and you are welcome to redistribute it"
-HelpText(23) = "    under certain conditions.  See LICENSE.TXT for more information."
+HelpText(19) = "                     F2 : Rapid Select Character Set"
+HelpText(20) = "                     F3 : Rapid Select Color"
+HelpText(21) = ""
+HelpText(22) = "    Cobalt Copyright (C) 2018 Jonathon Gosselin"
+HelpText(23) = "    This program comes with ABSOLUTELY NO WARRANTY."
+HelpText(24) = "    This is free software, and you are welcome to redistribute it"
+HelpText(25) = "    under certain conditions.  See LICENSE.TXT for more information."
 
 SUB ShowHelp()
   LOCATE 1, 1, 0
   COLOR 7, 0
 
-  PRINT CHR(201); STRING(78, 205); CHR(187);
   FOR WriteHelpText AS BYTE = 1 TO UBOUND(HelpText)
-    LOCATE (WriteHelpText + 1), 1
-
-    DIM AS BYTE PadRight = 77 - LEN(HelpText(WriteHelpText))
-    PRINT CHR(186); " "; HelpText(WriteHelpText); STRING(PadRight, 32); CHR(186);
+    DIM PadRightLength AS BYTE = 80 - LEN(HelpText(WriteHelpText))
+    LOCATE WriteHelpText, 1: PRINT HelpText(WriteHelpText); STRING(PadRightLength, 32);
   NEXT WriteHelpText
-  PRINT CHR(200); STRING(78, 205); CHR(188);
 
   DO:LOOP WHILE INKEY() = ""
 END SUB

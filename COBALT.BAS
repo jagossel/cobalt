@@ -20,10 +20,10 @@
 #INCLUDE ONCE "FILEIO.BI"
 #INCLUDE ONCE "HELP.BI"
 #INCLUDE ONCE "TITLE.BI"
+#INCLUDE ONCE "UI.BI"
 
 DECLARE SUB HandleKeyInput(KeyInput AS STRING)
 DECLARE SUB UpdateStatus()
-DECLARE SUB RedrawRegion(StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
 DECLARE SUB DrawCharacter(KeyInput AS STRING)
 DECLARE SUB DrawTypedCharacter(KeyInput AS STRING)
 DECLARE SUB ShowFullDrawing()
@@ -139,6 +139,10 @@ SUB HandleKeyInput(KeyInput AS STRING)
   ELSEIF KeyInput = KeyF1 THEN
     ShowHelp()
     RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+  ELSEIF KeyInput = KeyF2 THEN
+    AskCharacterSet()
+  ELSEIF KeyInput = KeyF3 THEN
+    AskColors()
   ELSEIF KeyInput = KeyDelete THEN
     ResetCharacter()
   ELSEIF KeyInput = KeyEscape THEN
@@ -200,18 +204,6 @@ SUB UpdateStatus()
   NEXT DisplayCurrentCharacterSet
 
   LOCATE CurrentCursorY, CurrentCursorX, 1: COLOR CurrentForegroundColor, CurrentBackgroundColor
-END SUB
-
-SUB RedrawRegion(StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
-  FOR RedrawY AS BYTE = StartY TO EndY
-    FOR RedrawX AS BYTE = StartX TO EndX
-      LOCATE RedrawY, RedrawX, 0
-
-      DIM AS DrawingCharacter CurrentDrawingCharacter = DrawingCanvas(RedrawX, RedrawY)
-      COLOR CurrentDrawingCharacter.ForegroundColor, CurrentDrawingCharacter.BackgroundColor
-      PRINT CHR(CurrentDrawingCharacter.CharacterCode);
-    NEXT RedrawX
-  NEXT RedrawY
 END SUB
 
 SUB DrawCharacter(KeyInput AS STRING)
