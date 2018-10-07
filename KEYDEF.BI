@@ -15,6 +15,8 @@
 ' along with this program.  If not, see <https://www.gnu.org/licenses/>.
 DIM SHARED AS STRING KeyEscape: KeyEscape = CHR(27)
 DIM SHARED AS STRING KeyF1: KeyF1 = CHR(255) + CHR(59)
+DIM SHARED AS STRING KeyF2: KeyF2 = CHR(255) + CHR(60)
+DIM SHARED AS STRING KeyF3: KeyF3 = CHR(255) + CHR(61)
 
 DIM SHARED AS STRING KeyUp: KeyUp = CHR(255) + CHR(72)
 DIM SHARED AS STRING KeyDown: KeyDown = CHR(255) + CHR(80)
