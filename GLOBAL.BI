@@ -30,6 +30,7 @@ CONST AS BYTE MaximumForegroundColor = 15
 CONST AS BYTE MaximumBackgroundColor = 7
 
 DIM SHARED AS BOOLEAN StatusAtTop = FALSE
+DIM SHARED AS BOOLEAN ExitApplication = FALSE
 DIM SHARED AS BYTE PreviousCursorY = 0
 DIM SHARED AS BYTE CurrentCursorX = 1
 DIM SHARED AS BYTE CurrentCursorY = 1

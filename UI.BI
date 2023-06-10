@@ -16,23 +16,13 @@
 #INCLUDE ONCE "GLOBAL.BI"
 #INCLUDE ONCE "CHARSETS.BI"
 #INCLUDE ONCE "KEYDEF.BI"
+#INCLUDE ONCE "DRAWING.BI"
 
-DECLARE SUB RedrawRegion(StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
 DECLARE SUB AskCharacterSet()
 DECLARE SUB AskColors()
 DECLARE SUB DrawColorSwatch(ForegroundColor AS BYTE, BackgroundColor AS BYTE, StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
-
-SUB RedrawRegion(StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
-  FOR RedrawY AS BYTE = StartY TO EndY
-    FOR RedrawX AS BYTE = StartX TO EndX
-      LOCATE RedrawY, RedrawX, 0
-
-      DIM AS DrawingCharacter CurrentDrawingCharacter = DrawingCanvas(RedrawX, RedrawY)
-      COLOR CurrentDrawingCharacter.ForegroundColor, CurrentDrawingCharacter.BackgroundColor
-      PRINT CHR(CurrentDrawingCharacter.CharacterCode);
-    NEXT RedrawX
-  NEXT RedrawY
-END SUB
+DECLARE SUB HandleKeyInput(KeyInput AS STRING)
+DECLARE SUB UpdateStatus()
 
 SUB AskCharacterSet()
   DIM AS BOOLEAN ExitDialogBox = FALSE
@@ -185,5 +175,166 @@ SUB DrawColorSwatch(ForegroundColor AS BYTE, BackgroundColor AS BYTE, StartX AS 
   FOR DrawSwatch AS BYTE = StartY TO EndY
     LOCATE DrawSwatch, StartX: COLOR ForegroundColor, BackgroundColor: PRINT STRING(ColumnCount, 197);
   NEXT DrawSwatch
+END SUB
+
+SUB HandleKeyInput(KeyInput AS STRING)
+  IF KeyInput = "" THEN
+    EXIT SUB
+  ELSEIF KeyInput = KeyUp THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorY = CurrentCursorY - 1
+    IF CurrentCursorY < MinimumCursorY THEN CurrentCursorY = MinimumCursorY
+  ELSEIF KeyInput = KeyDown THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorY = CurrentCursorY + 1
+    IF CurrentCursorY > MaximumCursorY THEN CurrentCursorY = MaximumCursorY
+  ELSEIF KeyInput = KeyLeft THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = CurrentCursorX - 1
+    IF CurrentCursorX < MinimumCursorX THEN CurrentCursorX = MinimumCursorX
+  ELSEIF KeyInput = KeyRight THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = CurrentCursorX + 1
+    IF CurrentCursorX > MaximumCursorX THEN CurrentCursorX = MaximumCursorX
+  ELSEIF KeyInput = KeyHome THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = MinimumCursorX
+  ELSEIF KeyInput = KeyEnd THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = MaximumCursorX
+  ELSEIF KeyInput = KeyCtrlUp THEN
+    CurrentForegroundColor = CurrentForegroundColor - 1
+    IF CurrentForegroundColor < MinimumForegroundColor THEN CurrentForegroundColor = MaximumForegroundColor
+  ELSEIF KeyInput = KeyCtrlDown THEN
+    CurrentForegroundColor = CurrentForegroundColor + 1
+    IF CurrentForegroundColor > MaximumForegroundColor THEN CurrentForegroundColor = MinimumForegroundColor
+  ELSEIF KeyInput = KeyCtrlLeft THEN
+    CurrentBackgroundColor = CurrentBackgroundColor - 1
+    IF CurrentBackgroundColor < MinimumBackgroundColor THEN CurrentBackgroundColor = MaximumBackgroundColor
+  ELSEIF KeyInput = KeyCtrlRight THEN
+    CurrentBackgroundColor = CurrentBackgroundColor + 1
+    IF CurrentBackgroundColor > MaximumBackgroundColor THEN CurrentBackgroundColor = MinimumBackgroundColor
+  ELSEIF KeyInput = KeyAltUp THEN
+    CurrentCharacterSet = CurrentCharacterSet - 1
+    IF CurrentCharacterSet < MinimumCharacterSetIndex THEN CurrentCharacterSet = MaximumCharacterSetIndex
+  ELSEIF KeyInput = KeyAltDown THEN
+    CurrentCharacterSet = CurrentCharacterSet + 1
+    IF CurrentCharacterSet > MaximumCharacterSetIndex THEN CurrentCharacterSet = MinimumCharacterSetIndex
+  ELSEIF IsInKeyRange(KeyInput, 48, 57) THEN
+    DrawCharacter(KeyInput)
+  ELSEIF IsInKeyRange(KeyInput, 32, 47) OR IsInKeyRange(KeyInput, 58, 126) THEN
+    DrawTypedCharacter(KeyInput)
+  ELSEIF KeyInput = KeyBackspace THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorX = CurrentCursorX - 1
+    IF CurrentCursorX < MinimumCursorX THEN CurrentCursorX = MinimumCursorX
+    ResetCharacter()
+  ELSEIF KeyInput = KeyEnter THEN
+    PreviousCursorY = CurrentCursorY
+    CurrentCursorY = CurrentCursorY + 1
+    IF CurrentCursorY > MaximumCursorY THEN
+      CurrentCursorY = MaximumCursorY
+    ELSE
+      CurrentCursorX = MinimumCursorX
+    END IF
+  ELSEIF KeyInput = KeyCtrlN THEN
+    IF GetConfirmation("Start a new drawing?") THEN
+      InitializeNewDrawing()
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
+  ELSEIF KeyInput = KeyCtrlO THEN
+    IF GetConfirmation("Load a drawing?") THEN
+      LoadDrawing()
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
+  ELSEIF KeyInput = KeyCtrlS THEN
+    SaveDrawing()
+    IF StatusAtTop THEN
+      RedrawRegion(1, 1, 80, 1)
+    ELSE
+      RedrawRegion(1, 25, 80, 25)
+    END IF
+  ELSEIF KeyInput = KeyCtrlF THEN
+    ShowFullDrawing()
+  ELSEIF KeyInput = KeyCtrlE THEN
+    ExportDrawing()
+    IF StatusAtTop THEN
+      RedrawRegion(1, 1, 80, 1)
+    ELSE
+      RedrawRegion(1, 25, 80, 25)
+    END IF
+  ELSEIF KeyInput = KeyCtrlI THEN
+    IF GetConfirmation("Import a drawing?") THEN
+      ImportDrawing()
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
+  ELSEIF KeyInput = KeyF1 THEN
+    ShowHelp()
+    RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
+  ELSEIF KeyInput = KeyF2 THEN
+    AskCharacterSet()
+  ELSEIF KeyInput = KeyF3 THEN
+    AskColors()
+  ELSEIF KeyInput = KeyDelete THEN
+    ResetCharacter()
+  ELSEIF KeyInput = KeyEscape THEN
+    ExitApplication = GetConfirmation("Exit Cobalt?")
+  END IF
+
+  UpdateStatus()
+END SUB
+
+SUB UpdateStatus()
+  DIM AS BOOLEAN MoveStatus = FALSE
+  IF PreviousCursorY = 12 AND CurrentCursorY = 13 THEN
+    StatusAtTop = TRUE
+    MoveStatus = TRUE
+  ELSEIF PreviousCursorY = 13 AND CurrentCursorY = 12 THEN
+    StatusAtTop = FALSE
+    MoveStatus = TRUE
+  END IF
+
+  DIM AS BYTE StatusY = 25
+  IF StatusAtTop THEN StatusY = 1
+
+  IF MoveStatus THEN
+    IF StatusAtTop THEN
+      RedrawRegion(1, 25, 80, 25)
+    ELSE
+      RedrawRegion(1, 1, 80, 1)
+    END IF
+  END IF
+
+  LOCATE StatusY, 1, 0
+  COLOR 7, 0
+  PRINT "F1 = HELP ";
+  PRINT CHR(179);
+  PRINT " ";
+  PRINT PadLeft(CurrentCursorX, 2, "0");
+  PRINT ",";
+  PRINT PadLeft(CurrentCursorY, 2, "0");
+  PRINT " ";
+  PRINT CHR(179);
+  PRINT " ";
+  PRINT PadLeft(CurrentForegroundColor, 2, "0");
+  PRINT ",";
+  PRINT PadLeft(CurrentBackgroundColor, 2, "0");
+  PRINT " ";
+  PRINT CHR(179);
+  PRINT " ";
+
+  FOR DisplayCurrentCharacterSet AS BYTE = 1 TO 10
+    COLOR 7, 0
+    PRINT PadLeft(DisplayCurrentCharacterSet, 1, " ");
+    PRINT "=";
+
+    COLOR CurrentForegroundColor, CurrentBackgroundColor
+    PRINT CharacterSets(CurrentCharacterSet, DisplayCurrentCharacterSet);
+
+    COLOR 7, 0
+    PRINT " ";
+  NEXT DisplayCurrentCharacterSet
+
+  LOCATE CurrentCursorY, CurrentCursorX, 1: COLOR CurrentForegroundColor, CurrentBackgroundColor
 END SUB
 
