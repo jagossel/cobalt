@@ -23,6 +23,7 @@ CONST AS BYTE MinimumCursorX = 1
 CONST AS BYTE MinimumCursorY = 1
 CONST AS BYTE MinimumForegroundColor = 0
 CONST AS BYTE MinimumBackgroundColor = 0
+CONST AS BYTE CursorYTolerance = 2 ' The amount of rows before moving the status bar
 
 CONST AS BYTE MaximumCursorX = 80
 CONST AS BYTE MaximumCursorY = 25
@@ -39,4 +40,3 @@ DIM SHARED AS BYTE CurrentBackgroundColor = 0
 DIM SHARED AS BYTE CurrentCharacterSet = 1
 
 DIM SHARED AS DrawingCharacter DrawingCanvas(MinimumCursorX TO MaximumCursorX, MinimumCursorY TO MaximumCursorY)
-

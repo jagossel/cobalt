@@ -286,12 +286,18 @@ END SUB
 
 SUB UpdateStatus()
   DIM AS BOOLEAN MoveStatus = FALSE
-  IF PreviousCursorY = 12 AND CurrentCursorY = 13 THEN
-    StatusAtTop = TRUE
-    MoveStatus = TRUE
-  ELSEIF PreviousCursorY = 13 AND CurrentCursorY = 12 THEN
-    StatusAtTop = FALSE
-    MoveStatus = TRUE
+  IF StatusAtTop THEN
+    DIM AS BYTE ToggleMoveY = MinimumCursorY + CursorYTolerance
+    IF CurrentCursorY <= ToggleMoveY THEN
+      StatusAtTop = FALSE
+      MoveStatus = TRUE
+    END IF
+  ELSE
+    DIM AS BYTE ToggleMoveY = MaximumCursorY - CursorYTolerance
+    IF CurrentCursorY >= ToggleMoveY THEN
+      StatusAtTop = TRUE
+      MoveStatus = TRUE
+    END IF
   END IF
 
   DIM AS BYTE StatusY = 25
