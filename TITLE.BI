@@ -1,5 +1,5 @@
 ' Cobal - ASCII Art
-' Copyright (C) 2018  Jonathon Gosselin
+' Copyright (C) 2018-2023  Jonathon Gosselin
 
 ' This program is free software: you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by

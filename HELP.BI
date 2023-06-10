@@ -1,5 +1,5 @@
 ' Cobal - ASCII Art
-' Copyright (C) 2018  Jonathon Gosselin
+' Copyright (C) 2018-2023  Jonathon Gosselin
 
 ' This program is free software: you can redistribute it and/or modify
 ' it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ HelpText(18) = "                    ESC : Exit"
 HelpText(19) = "               SHIFT+F2 : Rapid Select Character Set"
 HelpText(20) = "               SHIFT+F3 : Rapid Select Color"
 HelpText(21) = ""
-HelpText(22) = "    Cobalt Copyright (C) 2018 Jonathon Gosselin"
+HelpText(22) = "    Cobalt Copyright (C) 2018-2023 Jonathon Gosselin"
 HelpText(23) = "    This program comes with ABSOLUTELY NO WARRANTY."
 HelpText(24) = "    This is free software, and you are welcome to redistribute it"
 HelpText(25) = "    under certain conditions.  See LICENSE.TXT for more information."
