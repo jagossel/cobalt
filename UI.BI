@@ -220,9 +220,9 @@ SUB HandleKeyInput(KeyInput AS STRING)
   ELSEIF KeyInput = KeyAltDown THEN
     CurrentCharacterSet = CurrentCharacterSet + 1
     IF CurrentCharacterSet > MaximumCharacterSetIndex THEN CurrentCharacterSet = MinimumCharacterSetIndex
-  ELSEIF IsInKeyRange(KeyInput, 48, 57) THEN
+  ELSEIF IsInModifiedKeyRange(KeyInput, 59, 68) THEN
     DrawCharacter(KeyInput)
-  ELSEIF IsInKeyRange(KeyInput, 32, 47) OR IsInKeyRange(KeyInput, 58, 126) THEN
+  ELSEIF IsInKeyRange(KeyInput, 32, 126) THEN
     DrawTypedCharacter(KeyInput)
   ELSEIF KeyInput = KeyBackspace THEN
     PreviousCursorY = CurrentCursorY
@@ -268,12 +268,12 @@ SUB HandleKeyInput(KeyInput AS STRING)
       ImportDrawing()
       RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
     END IF
-  ELSEIF KeyInput = KeyF1 THEN
+  ELSEIF KeyInput = KeyShiftF1 THEN
     ShowHelp()
     RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MaximumCursorY)
-  ELSEIF KeyInput = KeyF2 THEN
+  ELSEIF KeyInput = KeyShiftF2 THEN
     AskCharacterSet()
-  ELSEIF KeyInput = KeyF3 THEN
+  ELSEIF KeyInput = KeyShiftF3 THEN
     AskColors()
   ELSEIF KeyInput = KeyDelete THEN
     ResetCharacter()
@@ -307,25 +307,21 @@ SUB UpdateStatus()
 
   LOCATE StatusY, 1, 0
   COLOR 7, 0
-  PRINT "F1 = HELP ";
+  PRINT "SHIFT+F1=HELP";
   PRINT CHR(179);
-  PRINT " ";
   PRINT PadLeft(CurrentCursorX, 2, "0");
   PRINT ",";
   PRINT PadLeft(CurrentCursorY, 2, "0");
-  PRINT " ";
   PRINT CHR(179);
-  PRINT " ";
   PRINT PadLeft(CurrentForegroundColor, 2, "0");
   PRINT ",";
   PRINT PadLeft(CurrentBackgroundColor, 2, "0");
-  PRINT " ";
   PRINT CHR(179);
-  PRINT " ";
 
   FOR DisplayCurrentCharacterSet AS BYTE = 1 TO 10
     COLOR 7, 0
-    PRINT PadLeft(DisplayCurrentCharacterSet, 1, " ");
+    PRINT "F";
+    PRINT TRIM(STR(DisplayCurrentCharacterSet));
     PRINT "=";
 
     COLOR CurrentForegroundColor, CurrentBackgroundColor

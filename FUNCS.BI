@@ -17,6 +17,7 @@
 
 DECLARE FUNCTION PadLeft(InputValue AS BYTE, TargetLength AS INTEGER, PadCharacter AS STRING) AS STRING
 DECLARE FUNCTION IsInKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange AS UBYTE) AS BOOLEAN
+DECLARE FUNCTION IsInModifiedKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange AS UBYTE) AS BOOLEAN
 DECLARE FUNCTION GetConfirmation(ConfirmationText AS STRING) AS BOOLEAN
 
 FUNCTION PadLeft(InputValue AS BYTE, TargetLength AS INTEGER, PadCharacter AS STRING) AS STRING
@@ -39,6 +40,14 @@ FUNCTION IsInKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange AS UBYTE
   IF NOT LEN(KeyInput) = 1 THEN RETURN FALSE
 
   DIM AS UBYTE KeyInputCode = ASC(KeyInput)
+  RETURN KeyInputCode >= StartRange AND KeyInputCode <= EndRange
+END FUNCTION
+
+FUNCTION IsInModifiedKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange AS UBYTE) AS BOOLEAN
+  IF NOT LEN(KeyInput) = 2 THEN RETURN FALSE
+  IF ASC(LEFT(KeyInput, 1)) <> 255 THEN RETURN FALSE
+
+  DIM AS UBYTE KeyInputCode = ASC(RIGHT(KeyInput, 1))
   RETURN KeyInputCode >= StartRange AND KeyInputCode <= EndRange
 END FUNCTION
 

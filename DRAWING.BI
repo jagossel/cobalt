@@ -20,9 +20,9 @@ DECLARE SUB ResetCharacter()
 DECLARE SUB RedrawRegion(StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
 
 SUB DrawCharacter(KeyInput AS STRING)
-  DIM AS BYTE CharacterIndex = VAL(KeyInput)
-  IF CharacterIndex = 0 THEN CharacterIndex = 10
+  IF NOT IsInModifiedKeyRange(KeyInput, 59, 68) THEN EXIT SUB
 
+  DIM AS UBYTE CharacterIndex = ASC(RIGHT(KeyInput, 1)) - 58
   DrawTypedCharacter(CharacterSets(CurrentCharacterSet, CharacterIndex))
 END SUB
 
