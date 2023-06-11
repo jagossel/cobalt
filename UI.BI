@@ -279,6 +279,11 @@ SUB HandleKeyInput(KeyInput AS STRING)
     ResetCharacter()
   ELSEIF KeyInput = KeyEscape THEN
     ExitApplication = GetConfirmation("Exit Cobalt?")
+    IF StatusAtTop THEN
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MinimumCursorY)
+    ELSE
+        RedrawRegion(MinimumCursorX, MaximumCursorY, MaximumCursorX, MaximumCursorY)
+    END IF
   END IF
 
   UpdateStatus()

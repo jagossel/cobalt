@@ -39,4 +39,7 @@ DIM SHARED AS BYTE CurrentForegroundColor = 7
 DIM SHARED AS BYTE CurrentBackgroundColor = 0
 DIM SHARED AS BYTE CurrentCharacterSet = 1
 
+' In theory, it would be possible to grab what is on the screen; however, the
+' UI exists on top of the drawing itself.  Therefore, this array exists to keep
+' track of the drawing when certain regions need to be redrawn.
 DIM SHARED AS DrawingCharacter DrawingCanvas(MinimumCursorX TO MaximumCursorX, MinimumCursorY TO MaximumCursorY)
