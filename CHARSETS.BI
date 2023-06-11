@@ -38,4 +38,3 @@ FOR ReadCharacterSetY AS BYTE = MinimumCharacterSetIndex TO MaximumCharacterSetI
     CharacterSets(ReadCharacterSetY, ReadCharacterSetX) = CHR(CharacterCode)
   NEXT ReadCharacterSetX
 NEXT ReadCharacterSetY
-

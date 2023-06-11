@@ -339,4 +339,3 @@ SUB UpdateStatus()
 
   LOCATE CurrentCursorY, CurrentCursorX, 1: COLOR CurrentForegroundColor, CurrentBackgroundColor
 END SUB
-

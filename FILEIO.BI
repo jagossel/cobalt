@@ -609,4 +609,3 @@ FUNCTION ConvertColorCodeToAnsiColorCode(ColorCode AS BYTE) AS BYTE
 
   RETURN AnsiColorCode
 END FUNCTION
-

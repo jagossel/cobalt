@@ -71,4 +71,3 @@ SUB ShowTitle()
 
   DO:LOOP WHILE INKEY() = ""
 END SUB
-

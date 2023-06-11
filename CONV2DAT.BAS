@@ -43,4 +43,3 @@ OPEN "TMP.TXT" FOR OUTPUT AS #CurrentFileNumber
     PRINT #CurrentFileNumber, CurrentLine
   NEXT WriteLine
 CLOSE #CurrentFileNumber
-

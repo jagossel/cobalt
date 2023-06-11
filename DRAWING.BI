@@ -70,4 +70,3 @@ SUB RedrawRegion(StartX AS BYTE, StartY AS BYTE, EndX AS BYTE, EndY AS BYTE)
     NEXT RedrawX
   NEXT RedrawY
 END SUB
-

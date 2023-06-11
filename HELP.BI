@@ -53,4 +53,3 @@ SUB ShowHelp()
 
   DO:LOOP WHILE INKEY() = ""
 END SUB
-

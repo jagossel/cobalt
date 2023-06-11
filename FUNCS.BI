@@ -72,4 +72,3 @@ FUNCTION GetConfirmation(DialogText AS STRING) AS BOOLEAN
 
   RETURN DialogResult
 END FUNCTION
-

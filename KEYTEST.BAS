@@ -27,4 +27,3 @@ FOR WriteCode AS BYTE = 1 TO LEN(KeyInput)
 
   PRINT TRIM(STR(CurrentCharacterCode))
 NEXT WriteCode
-

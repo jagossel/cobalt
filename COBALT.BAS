@@ -37,4 +37,3 @@ LOOP WHILE NOT ExitApplication
 COLOR 7, 0
 CLS
 END
-
