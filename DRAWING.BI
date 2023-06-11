@@ -42,9 +42,9 @@ END SUB
 
 SUB ShowFullDrawing()
   IF StatusAtTop THEN
-    RedrawRegion(1, 1, 80, 1)
+    RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MinimumCursorY)
   ELSE
-    RedrawRegion(1, 25, 80, 25)
+    RedrawRegion(MinimumCursorX, MaximumCursorY, MaximumCursorX, MaximumCursorY)
   END IF
 
   LOCATE CurrentCursorY, CurrentCursorX, 0

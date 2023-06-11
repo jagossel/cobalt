@@ -34,11 +34,6 @@ DECLARE FUNCTION GetExportedFileName(FileOperation AS STRING) AS STRING
 DECLARE FUNCTION IsFileNameCharacter(FileName AS STRING, KeyInput AS STRING) AS BOOLEAN
 DECLARE FUNCTION ConvertColorCodeToAnsiColorCode(ColorCode AS BYTE) AS BYTE
 
-CONST AS BYTE WriteNoCodes = 0
-CONST AS BYTE WriteForegroundCode = 1
-CONST AS BYTE WriteBackgroundCode = 2
-CONST AS BYTE WriteBothCodes = 3
-
 SUB InitializeNewDrawing()
   CurrentCursorX = MinimumCursorX
   CurrentCursorY = MinimumCursorY
@@ -121,8 +116,8 @@ SUB ExportDrawingToAnsiText(FileName AS STRING)
     DIM AS BYTE CurrentExportBackgroundColor = MaximumBackgroundColor + 1
 
     IF OPEN(FileName FOR OUTPUT AS #CurrentFileNumber) = 0 THEN
-      FOR WriteCursorY AS BYTE = 1 TO 25
-        FOR WriteCursorX AS BYTE = 1 TO 80
+      FOR WriteCursorY AS BYTE = MinimumCursorY TO MaximumCursorY
+        FOR WriteCursorX AS BYTE = MinimumCursorX TO MaximumCursorX
           IF DrawingCanvas(WriteCursorX, WriteCursorY).ForegroundColor <> CurrentExportForegroundColor ORELSE DrawingCanvas(WriteCursorX, WriteCursorY).BackgroundColor <> CurrentExportBackgroundColor THEN
             PRINT #CurrentFileNumber, KeyEscape; CHR(91);
 
@@ -488,10 +483,10 @@ SUB DisplayFileError(FileName AS STRING, ErrorCode AS UBYTE)
       DialogText = " ?! Unknown error"
   END SELECT
 
-  DIM AS BYTE DialogTextY = 25
-  IF StatusAtTop THEN DialogTextY = 1
+  DIM AS BYTE DialogTextY = MaximumCursorY
+  IF StatusAtTop THEN DialogTextY = MinimumCursorY
 
-  LOCATE DialogTextY, 1, 0: COLOR 12, 0: PRINT SPACE(80);
+  LOCATE DialogTextY, 1, 0: COLOR 12, 0: PRINT SPACE(MaximumCursorX);
   LOCATE DialogTextY, 1, 0: COLOR 12, 0: PRINT DialogText;
   SLEEP 3000
 
@@ -500,10 +495,10 @@ END SUB
 
 FUNCTION GetExportedFileName(FileOperation AS STRING) AS STRING
   DIM AS STRING DialogText: DialogText = "Format (A)NSI or (T)ext: "
-  DIM AS BYTE DialogTextY = 25
-  IF StatusAtTop THEN DialogTextY = 1
+  DIM AS BYTE DialogTextY = MaximumCursorY
+  IF StatusAtTop THEN DialogTextY = MinimumCursorY
 
-  LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT SPACE(80);
+  LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT SPACE(MaximumCursorX);
   LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT DialogText;
 
   DIM AS BOOLEAN ExitDialog = FALSE
@@ -534,10 +529,10 @@ END FUNCTION
 
 FUNCTION GetFileName(FileOperation AS STRING) AS STRING
   DIM AS STRING DialogText: DialogText = "Name w/o Extension: "
-  DIM AS BYTE DialogTextY = 25
-  IF StatusAtTop THEN DialogTextY = 1
+  DIM AS BYTE DialogTextY = MaximumCursorY
+  IF StatusAtTop THEN DialogTextY = MinimumCursorY
 
-  LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT SPACE(80);
+  LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT SPACE(MaximumCursorX);
   LOCATE DialogTextY, 1, 0: COLOR 7, 0: PRINT DialogText;
 
   DIM AS BOOLEAN ExitDialog = FALSE
@@ -568,7 +563,7 @@ FUNCTION GetFileName(FileOperation AS STRING) AS STRING
   LOOP UNTIL ExitDialog
 
   IF ContinueFileOperation THEN
-    LOCATE DialogTextY, 1: PRINT SPACE(80);
+    LOCATE DialogTextY, 1: PRINT SPACE(MaximumCursorX);
     LOCATE DialogTextY, 1: PRINT FileOperation; "ing "; FileName; "...";
     RETURN FileName
   ELSE

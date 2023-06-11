@@ -250,18 +250,18 @@ SUB HandleKeyInput(KeyInput AS STRING)
   ELSEIF KeyInput = KeyCtrlS THEN
     SaveDrawing()
     IF StatusAtTop THEN
-      RedrawRegion(1, 1, 80, 1)
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MinimumCursorY)
     ELSE
-      RedrawRegion(1, 25, 80, 25)
+      RedrawRegion(MinimumCursorX, MaximumCursorY, MaximumCursorX, MaximumCursorY)
     END IF
   ELSEIF KeyInput = KeyCtrlF THEN
     ShowFullDrawing()
   ELSEIF KeyInput = KeyCtrlE THEN
     ExportDrawing()
     IF StatusAtTop THEN
-      RedrawRegion(1, 1, 80, 1)
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MinimumCursorY)
     ELSE
-      RedrawRegion(1, 25, 80, 25)
+      RedrawRegion(MinimumCursorX, MaximumCursorY, MaximumCursorX, MaximumCursorY)
     END IF
   ELSEIF KeyInput = KeyCtrlI THEN
     IF GetConfirmation("Import a drawing?") THEN
@@ -300,14 +300,14 @@ SUB UpdateStatus()
     END IF
   END IF
 
-  DIM AS BYTE StatusY = 25
-  IF StatusAtTop THEN StatusY = 1
+  DIM AS BYTE StatusY = MaximumCursorY
+  IF StatusAtTop THEN StatusY = MinimumCursorY
 
   IF MoveStatus THEN
     IF StatusAtTop THEN
-      RedrawRegion(1, 25, 80, 25)
+      RedrawRegion(MinimumCursorX, MaximumCursorY, MaximumCursorX, MaximumCursorY)
     ELSE
-      RedrawRegion(1, 1, 80, 1)
+      RedrawRegion(MinimumCursorX, MinimumCursorY, MaximumCursorX, MinimumCursorY)
     END IF
   END IF
 

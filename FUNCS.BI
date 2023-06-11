@@ -52,10 +52,10 @@ FUNCTION IsInModifiedKeyRange(KeyInput AS STRING, StartRange AS UBYTE, EndRange 
 END FUNCTION
 
 FUNCTION GetConfirmation(DialogText AS STRING) AS BOOLEAN
-  DIM AS BYTE DialogLocation = 25
-  IF StatusAtTop THEN DialogLocation = 1
+  DIM AS BYTE DialogLocation = MaximumCursorY
+  IF StatusAtTop THEN DialogLocation = MinimumCursorY
 
-  LOCATE DialogLocation, 1, 0: COLOR 7, 0: PRINT SPACE(80);
+  LOCATE DialogLocation, 1, 0: COLOR 7, 0: PRINT SPACE(MaximumCursorX);
   LOCATE DialogLocation, 1, 1: COLOR 12, 0: PRINT DialogText; " (Y/N) ";
 
   DIM AS BOOLEAN DialogResult = FALSE
