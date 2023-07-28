@@ -14,11 +14,13 @@ int main() {
 	initDrawing();
 	redrawRegion(minimumCursorX, minimumCursorY,
 		maximumCursorX, maximumCursorY);
+	updateStatusBar();
 
 	while (!exitApplication) {
 		loadScreenSize();
 		int keyInput = getch();
 		handleKeyInput(keyInput);
+		updateStatusBar();
 		refresh();
 	}
 

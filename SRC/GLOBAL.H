@@ -7,7 +7,11 @@ class DrawingCharacter {
 		int backgroundColor;
 };
 
+const int statusBarYTolerance = 2;
+
 bool exitApplication = false;
+bool statusBarAtTop = false;
+
 int minimumCursorX = 0;
 int minimumCursorY = 0;
 
