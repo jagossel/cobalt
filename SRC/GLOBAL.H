@@ -26,4 +26,3 @@ int currentCursorY = 0;
 int currentCharacterSetIndex = 0;
 
 DrawingCharacter canvas[25][80];
-

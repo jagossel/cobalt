@@ -14,4 +14,3 @@ void redrawRegion(int startX, int startY, int endX, int endY) {
 	move(currentCursorY, currentCursorX);
 	curs_set(true);
 }
-

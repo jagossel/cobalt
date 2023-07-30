@@ -14,8 +14,7 @@ int main() {
 
 	init();
 	initDrawing();
-	redrawRegion(minimumCursorX, minimumCursorY,
-		maximumCursorX, maximumCursorY);
+	redrawRegion(minimumCursorX, minimumCursorY, maximumCursorX, maximumCursorY);
 	updateStatusBar();
 
 	while (!exitApplication) {
@@ -30,4 +29,3 @@ int main() {
 	
 	return 0;
 }
-

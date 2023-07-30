@@ -1,12 +1,22 @@
 void init();
-void handleKeyInput(int keyInput);
 void loadScreenSize();
+void handleKeyInput(int keyInput);
 void updateStatusBar();
 
 void init() {
 	loadScreenSize();
 	currentCursorY = minimumCursorY;
 	currentCursorX = minimumCursorX;
+}
+
+void loadScreenSize() {
+	getbegyx(stdscr, minimumCursorY, minimumCursorX);
+	getmaxyx(stdscr, maximumCursorY, maximumCursorX);
+
+	// Not sure why this needs to be done, but the maximum range has to be decremented in order to keep the cursor
+	// from sticking to the bottom of the screen.
+	maximumCursorY--;
+	maximumCursorX--;
 }
 
 void handleKeyInput(int keyInput) {
@@ -46,17 +56,6 @@ void handleKeyInput(int keyInput) {
 	if (moveCursor) {
 		move(currentCursorY, currentCursorX);
 	}
-}
-
-void loadScreenSize() {
-	getbegyx(stdscr, minimumCursorY, minimumCursorX);
-	getmaxyx(stdscr, maximumCursorY, maximumCursorX);
-
-	// Not sure why this needs to be done, but the maximum range has
-	// to be decremented in order to keep the cursor from sticking
-	// to the bottom of the screen.
-	maximumCursorY--;
-	maximumCursorX--;
 }
 
 void updateStatusBar() {
@@ -111,4 +110,3 @@ void updateStatusBar() {
 	curs_set(true);
 	move(currentCursorY, currentCursorX);
 }
-

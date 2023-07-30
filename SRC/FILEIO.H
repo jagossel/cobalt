@@ -1,3 +1,5 @@
+void initDrawing();
+
 void initDrawing() {
 	for (int initY = 0; initY < 25; initY++) {
 		for (int initX = 0; initX < 80; initX++) {
@@ -7,4 +9,3 @@ void initDrawing() {
 		}
 	}
 }
-
