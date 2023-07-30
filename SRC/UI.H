@@ -27,6 +27,18 @@ void handleKeyInput(int keyInput) {
 		if (currentCursorX >= maximumCursorX) return;
 		currentCursorX++;
 		moveCursor = true;
+	} else if (ALT_UP == keyInput) {
+		if (currentCharacterSetIndex >= maximumCharacterSetIndex) {
+			currentCharacterSetIndex = minimumCharacterSetIndex;
+		} else {
+			currentCharacterSetIndex++;
+		}
+	} else if (ALT_DOWN == keyInput) {
+		if (currentCharacterSetIndex <= minimumCharacterSetIndex) {
+			currentCharacterSetIndex = maximumCharacterSetIndex;
+		} else {
+			currentCharacterSetIndex--;
+		}
 	} else if (27 == keyInput) {
 		exitApplication = true;
 	}
@@ -81,9 +93,21 @@ void updateStatusBar() {
 
 	int printCurrentCursorX = currentCursorX + 1;
 	int printCurrentCursorY = currentCursorY + 1;
-	printw("%02d,%02d",
+	printw(
+		"%02d,%02d \xB3 F1=%c F2=%c F3=%c F4=%c F5=%c F6=%c F7=%c F8=%c F9=%c F10=%c",
 		printCurrentCursorX,
-		printCurrentCursorY);
+		printCurrentCursorY,
+		characterSets[currentCharacterSetIndex][0],
+		characterSets[currentCharacterSetIndex][1],
+		characterSets[currentCharacterSetIndex][2],
+		characterSets[currentCharacterSetIndex][3],
+		characterSets[currentCharacterSetIndex][4],
+		characterSets[currentCharacterSetIndex][5],
+		characterSets[currentCharacterSetIndex][6],
+		characterSets[currentCharacterSetIndex][7],
+		characterSets[currentCharacterSetIndex][8],
+		characterSets[currentCharacterSetIndex][9]);
+
 	curs_set(true);
 	move(currentCursorY, currentCursorX);
 }

@@ -8,6 +8,8 @@ class DrawingCharacter {
 };
 
 const int statusBarYTolerance = 2;
+const int minimumCharacterSetIndex = 0;
+const int maximumCharacterSetIndex = 10;
 
 bool exitApplication = false;
 bool statusBarAtTop = false;
@@ -20,6 +22,8 @@ int maximumCursorY = 0;
 
 int currentCursorX = 0;
 int currentCursorY = 0;
+
+int currentCharacterSetIndex = 0;
 
 DrawingCharacter canvas[25][80];
 

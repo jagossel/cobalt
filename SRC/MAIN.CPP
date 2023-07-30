@@ -1,5 +1,6 @@
 #include <curses.h>
 #include "global.h"
+#include "charsets.h"
 #include "drawing.h"
 #include "ui.h"
 #include "fileio.h"
@@ -7,6 +8,7 @@
 int main() {
 	initscr();
 	raw();
+	raw_output(true);
 	keypad(stdscr, true);
 	noecho();
 
