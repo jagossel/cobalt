@@ -12,6 +12,10 @@ class DrawingCharacter {
 const int statusBarYTolerance = 2;
 const int minimumCharacterSetIndex = 0;
 const int maximumCharacterSetIndex = 10;
+const int minimumForegroundColor = 0;
+const int maximumForegroundColor = 15;
+const int minimumBackgroundColor = 0;
+const int maximumBackgroundColor = 15;
 
 bool exitApplication = false;
 bool statusBarAtTop = false;
@@ -26,6 +30,8 @@ int currentCursorX = 0;
 int currentCursorY = 0;
 
 int currentCharacterSetIndex = 0;
+int currentForegroundColor = 7;
+int currentBackgroundColor = 0;
 
 DrawingCharacter canvas[25][80];
 
@@ -44,12 +50,28 @@ char characterSets[11][10] =
 	{ '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x0B', '\x0C', '\x0F', '\x20' }
 };
 
+// This is the same order as the ANSI display driver color list.
+short colorList[8] = {
+	COLOR_BLACK,
+	COLOR_RED,
+	COLOR_GREEN,
+	COLOR_YELLOW,
+	COLOR_BLUE,
+	COLOR_MAGENTA,
+	COLOR_CYAN,
+	COLOR_WHITE
+};
+
 void redrawRegion(int startX, int startY, int endX, int endY);
 void init();
 void loadScreenSize();
 void handleKeyInput(int keyInput);
 void updateStatusBar();
 void initDrawing();
+void initColors();
+void setColors();
+void resetColors();
+int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex);
 
 int main() {
 	initscr();
@@ -57,9 +79,11 @@ int main() {
 	raw_output(true);
 	keypad(stdscr, true);
 	noecho();
+	start_color();
 
 	init();
 	initDrawing();
+	initColors();
 	redrawRegion(minimumCursorX, minimumCursorY, maximumCursorX, maximumCursorY);
 	updateStatusBar();
 
@@ -137,6 +161,30 @@ void handleKeyInput(int keyInput) {
 		} else {
 			currentCharacterSetIndex--;
 		}
+	} else if (CTL_UP == keyInput) {
+		if (currentForegroundColor <= minimumForegroundColor) {
+			currentForegroundColor = maximumForegroundColor;
+		} else {
+			currentForegroundColor--;
+		}
+	} else if (CTL_DOWN == keyInput) {
+		if (currentForegroundColor >= maximumForegroundColor) {
+			currentForegroundColor = minimumForegroundColor;
+		} else {
+			currentForegroundColor++;
+		}
+	} else if (CTL_LEFT == keyInput) {
+		if (currentBackgroundColor <= minimumBackgroundColor) {
+			currentBackgroundColor = maximumBackgroundColor;
+		} else {
+			currentBackgroundColor--;
+		}
+	} else if (CTL_RIGHT == keyInput) {
+		if (currentBackgroundColor >= maximumBackgroundColor) {
+			currentBackgroundColor = minimumBackgroundColor;
+		} else {
+			currentBackgroundColor++;
+		}
 	} else if (27 == keyInput) {
 		exitApplication = true;
 	}
@@ -176,14 +224,22 @@ void updateStatusBar() {
 	}
 
 	curs_set(false);
+	setColors();
+	move(statusBarY, minimumCursorX);
+	printw("% 80c", ' ');
+
 	move(statusBarY, minimumCursorX);
 
 	int printCurrentCursorX = currentCursorX + 1;
 	int printCurrentCursorY = currentCursorY + 1;
 	printw(
-		"%02d,%02d \xB3 F1=%c F2=%c F3=%c F4=%c F5=%c F6=%c F7=%c F8=%c F9=%c F10=%c",
+		"%02d,%02d%c%02d,%02d%cF1=%c F2=%c F3=%c F4=%c F5=%c F6=%c F7=%c F8=%c F9=%c F10=%c",
+		currentForegroundColor,
+		currentBackgroundColor,
+		'\xB3',
 		printCurrentCursorX,
 		printCurrentCursorY,
+		'\xB3',
 		characterSets[currentCharacterSetIndex][0],
 		characterSets[currentCharacterSetIndex][1],
 		characterSets[currentCharacterSetIndex][2],
@@ -195,6 +251,7 @@ void updateStatusBar() {
 		characterSets[currentCharacterSetIndex][8],
 		characterSets[currentCharacterSetIndex][9]);
 
+	resetColors();
 	curs_set(true);
 	move(currentCursorY, currentCursorX);
 }
@@ -207,4 +264,45 @@ void initDrawing() {
 			canvas[initY][initX].backgroundColor = 0;
 		}
 	}
+}
+
+void initColors() {
+	for (int initBackgroundColor = 0; initBackgroundColor < 16; initBackgroundColor++) {
+		int backgroundColorIndex = initBackgroundColor % 8;
+		short backgroundColor = colorList[backgroundColorIndex];
+		for (int initForegroundColor = 0; initForegroundColor < 16; initForegroundColor++) {
+			int foregroundColorIndex = initForegroundColor % 8;
+			int colorPairIndex = getColorPairIndex(initForegroundColor, initBackgroundColor);
+			short foregroundColor = colorList[foregroundColorIndex];
+
+			init_pair(colorPairIndex, foregroundColor, backgroundColor);
+		}
+	}
+}
+
+void setColors() {
+	int colorPairIndex = getColorPairIndex(currentForegroundColor, currentBackgroundColor);
+	attron(COLOR_PAIR(colorPairIndex));
+	if (currentForegroundColor > 7) {
+		attron(A_BOLD);
+	} else {
+		attroff(A_BOLD);
+	}
+
+	if (currentBackgroundColor > 7) {
+		attron(A_BLINK);
+	} else {
+		attroff(A_BLINK);
+	}
+}
+
+void resetColors() {
+	int colorPairIndex = getColorPairIndex(currentForegroundColor, currentBackgroundColor);
+	attroff(COLOR_PAIR(colorPairIndex));
+	attroff(A_BOLD);
+	attroff(A_BLINK);
+}
+
+int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex) {
+	return (backgroundColorIndex * 16) + foregroundColorIndex;
 }
