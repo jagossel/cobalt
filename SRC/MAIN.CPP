@@ -1,5 +1,5 @@
 /***
- * Cobal (C++ Rewrite) - ASCII Art
+ * Cobalt (C++ Rewrite) - ASCII Art
  * Copyright (C) 2018-2023  Jonathon Gosselin
  *
  * This program is free software: you can redistribute it and/or modify
