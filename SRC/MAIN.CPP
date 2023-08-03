@@ -86,9 +86,12 @@ void handleKeyInput(int keyInput);
 void updateStatusBar();
 void initDrawing();
 void initColors();
-void setColors();
+void setColors(int foregroundColor, int backgroundColor);
 void resetColors();
 int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex);
+void drawTypedCharacter(char typedCharacter);
+void advanceColumn(bool backwards);
+void advanceRow(bool backwards);
 
 int main() {
 	initscr();
@@ -102,18 +105,19 @@ int main() {
 	initDrawing();
 	initColors();
 	redrawRegion(minimumCursorX, minimumCursorY, maximumCursorX, maximumCursorY);
-	updateStatusBar();
 
 	while (!exitApplication) {
 		loadScreenSize();
-		int keyInput = getch();
-		handleKeyInput(keyInput);
 		updateStatusBar();
 		refresh();
+		int keyInput = getch();
+		handleKeyInput(keyInput);
 	}
 
+	clear();
+	refresh();
 	endwin();
-	
+
 	return 0;
 }
 
@@ -121,13 +125,18 @@ void redrawRegion(int startX, int startY, int endX, int endY) {
 	curs_set(false);
 	for (int redrawY = startY; redrawY <= endY; redrawY++) {
 		for (int redrawX = startX; redrawX <= endX; redrawX++) {
-			move(redrawY, redrawX);
 			int yIndex = redrawY - minimumCursorY;
 			int xIndex = redrawX - minimumCursorX;
+			int foregroundColor = canvas[yIndex][xIndex].foregroundColor;
+			int backgroundColor = canvas[yIndex][xIndex].backgroundColor;
+
+			move(redrawY, redrawX);
+			setColors(foregroundColor, backgroundColor);
 			printw("%c", canvas[yIndex][xIndex].character);
 		}
 	}
 
+	resetColors();
 	move(currentCursorY, currentCursorX);
 	curs_set(true);
 }
@@ -149,23 +158,14 @@ void loadScreenSize() {
 }
 
 void handleKeyInput(int keyInput) {
-	bool moveCursor = false;
 	if (KEY_UP == keyInput) {
-		if (currentCursorY <= minimumCursorY) return;
-		currentCursorY--;
-		moveCursor = true;
+		advanceRow(true);
 	} else if (KEY_DOWN == keyInput) {
-		if (currentCursorY >= maximumCursorY) return;
-		currentCursorY++;
-		moveCursor = true;
+		advanceRow(false);
 	} else if (KEY_LEFT == keyInput) {
-		if (currentCursorX <= minimumCursorX) return;
-		currentCursorX--;
-		moveCursor = true;
+		advanceColumn(true);
 	} else if (KEY_RIGHT == keyInput) {
-		if (currentCursorX >= maximumCursorX) return;
-		currentCursorX++;
-		moveCursor = true;
+		advanceColumn(false);
 	} else if (ALT_UP == keyInput) {
 		if (currentCharacterSetIndex >= maximumCharacterSetIndex) {
 			currentCharacterSetIndex = minimumCharacterSetIndex;
@@ -202,12 +202,10 @@ void handleKeyInput(int keyInput) {
 		} else {
 			currentBackgroundColor++;
 		}
+	} else if (keyInput >= 32 && keyInput <= 126) {
+		drawTypedCharacter(keyInput);
 	} else if (27 == keyInput) {
 		exitApplication = true;
-	}
-
-	if (moveCursor) {
-		move(currentCursorY, currentCursorX);
 	}
 }
 
@@ -241,7 +239,7 @@ void updateStatusBar() {
 	}
 
 	curs_set(false);
-	setColors();
+	setColors(currentForegroundColor, currentBackgroundColor);
 	move(statusBarY, minimumCursorX);
 	printw("% 80c", ' ');
 
@@ -297,16 +295,16 @@ void initColors() {
 	}
 }
 
-void setColors() {
-	int colorPairIndex = getColorPairIndex(currentForegroundColor, currentBackgroundColor);
+void setColors(int foregroundColor, int backgroundColor) {
+	int colorPairIndex = getColorPairIndex(foregroundColor, backgroundColor);
 	attron(COLOR_PAIR(colorPairIndex));
-	if (currentForegroundColor > 7) {
+	if (foregroundColor > 7) {
 		attron(A_BOLD);
 	} else {
 		attroff(A_BOLD);
 	}
 
-	if (currentBackgroundColor > 7) {
+	if (backgroundColor > 7) {
 		attron(A_BLINK);
 	} else {
 		attroff(A_BLINK);
@@ -314,7 +312,7 @@ void setColors() {
 }
 
 void resetColors() {
-	int colorPairIndex = getColorPairIndex(currentForegroundColor, currentBackgroundColor);
+	int colorPairIndex = getColorPairIndex(7, 0);
 	attroff(COLOR_PAIR(colorPairIndex));
 	attroff(A_BOLD);
 	attroff(A_BLINK);
@@ -322,4 +320,39 @@ void resetColors() {
 
 int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex) {
 	return (backgroundColorIndex * 16) + foregroundColorIndex;
+}
+
+void drawTypedCharacter(char typedCharacter) {
+	canvas[currentCursorY][currentCursorX].character = typedCharacter;
+	canvas[currentCursorY][currentCursorX].foregroundColor = currentForegroundColor;
+	canvas[currentCursorY][currentCursorX].backgroundColor = currentBackgroundColor;
+
+	setColors(currentForegroundColor, currentBackgroundColor);
+	printw("%c", typedCharacter);
+	resetColors();
+	advanceColumn(false);
+}
+
+void advanceColumn(bool backwards) {
+	if (backwards) {
+		if (currentCursorX <= minimumCursorX) return;
+		currentCursorX--;
+	} else {
+		if (currentCursorX >= maximumCursorX) return;
+		currentCursorX++;
+	}
+
+	move(currentCursorY, currentCursorX);
+}
+
+void advanceRow(bool backwards) {
+	if (backwards) {
+		if (currentCursorY <= minimumCursorY) return;
+		currentCursorY--;
+	} else {
+		if (currentCursorY >= maximumCursorY) return;
+		currentCursorY++;
+	}
+
+	move(currentCursorY, currentCursorX);
 }
