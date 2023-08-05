@@ -21,6 +21,8 @@ using namespace std;
 
 // There are some keys that are not working in PDCurses; here, we are going to define our own.
 #define COBALT_KEY_CTL_F     0x06
+#define COBALT_KEY_CTL_N     0x0E
+
 #define COBALT_KEY_BACKSPACE 0x08
 #define COBALT_KEY_ENTER     0x0D
 #define COBALT_KEY_ESCAPE    0x1B
@@ -100,6 +102,8 @@ void advanceColumn(bool backwards);
 void advanceRow(bool backwards);
 void resetCharacter();
 void showFullDrawing();
+bool getConfirmation(const char* dialogMessage);
+void newDrawing();
 
 int main() {
 	initscr();
@@ -231,6 +235,8 @@ void handleKeyInput(int keyInput) {
 		currentCursorX = minimumCursorX;
 	} else if (COBALT_KEY_CTL_F == keyInput) {
 		showFullDrawing();
+	} else if (COBALT_KEY_CTL_N == keyInput) {
+		newDrawing();
 	} else if (COBALT_KEY_ESCAPE == keyInput) {
 		exitApplication = true;
 	}
@@ -404,4 +410,45 @@ void showFullDrawing() {
 	curs_set(0);
 	getch();
 	curs_set(1);
+}
+
+bool getConfirmation(const char* dialogMessage) {
+	int dialogY = statusBarAtTop ? minimumCursorY : maximumCursorY;
+
+	move(dialogY, minimumCursorX);
+	setColors(7, 0);
+	printw("% 80c", ' ');
+
+	move(dialogY, minimumCursorX);
+	setColors(9, 0);
+	printw("%s (Y/N) ", dialogMessage);
+
+	bool confirmationResult = false;
+	bool exitDialog = false;
+	while (!exitDialog) {
+		int dialogKeyInput = getch();
+		if ('Y' == dialogKeyInput || 'y' == dialogKeyInput) {
+			confirmationResult = true;
+			exitDialog = true;
+		} else if ('N' == dialogKeyInput || 'n' == dialogKeyInput) {
+			exitDialog = true;
+		}
+	}
+
+	return confirmationResult;
+}
+
+void newDrawing() {
+	if (getConfirmation("Start a new Drawing?")) {
+		currentCursorX = 0;
+		currentCursorY = 0;
+		currentCharacterSetIndex = 0;
+		currentForegroundColor = 7;
+		currentBackgroundColor = 0;
+
+		move(currentCursorX, currentCursorY);
+		initDrawing();
+	}
+
+	redrawRegion(minimumCursorX, minimumCursorY, maximumCursorX, maximumCursorY);
 }
