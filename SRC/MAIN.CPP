@@ -20,6 +20,7 @@
 using namespace std;
 
 // There are some keys that are not working in PDCurses; here, we are going to define our own.
+#define COBALT_KEY_CTL_F     0x06
 #define COBALT_KEY_BACKSPACE 0x08
 #define COBALT_KEY_ENTER     0x0D
 #define COBALT_KEY_ESCAPE    0x1B
@@ -98,6 +99,7 @@ void drawTypedCharacter(char typedCharacter);
 void advanceColumn(bool backwards);
 void advanceRow(bool backwards);
 void resetCharacter();
+void showFullDrawing();
 
 int main() {
 	initscr();
@@ -227,6 +229,8 @@ void handleKeyInput(int keyInput) {
 		if (currentCursorY >= maximumCursorY) return;
 		advanceRow(false);
 		currentCursorX = minimumCursorX;
+	} else if (COBALT_KEY_CTL_F == keyInput) {
+		showFullDrawing();
 	} else if (COBALT_KEY_ESCAPE == keyInput) {
 		exitApplication = true;
 	}
@@ -261,7 +265,7 @@ void updateStatusBar() {
 		}
 	}
 
-	curs_set(false);
+	curs_set(0);
 	setColors(currentForegroundColor, currentBackgroundColor);
 	move(statusBarY, minimumCursorX);
 	printw("% 80c", ' ');
@@ -290,7 +294,7 @@ void updateStatusBar() {
 		characterSets[currentCharacterSetIndex][9]);
 
 	resetColors();
-	curs_set(true);
+	curs_set(1);
 	move(currentCursorY, currentCursorX);
 }
 
@@ -391,4 +395,14 @@ void resetCharacter() {
 
 	setColors(7, 0);
 	printw("%c", ' ');
+}
+
+void showFullDrawing() {
+	curs_set(0);
+
+	int redrawRegionY = statusBarAtTop ? minimumCursorY : maximumCursorY;
+	redrawRegion(minimumCursorX, redrawRegionY, maximumCursorX, redrawRegionY);
+	getch();
+
+	curs_set(1);
 }
