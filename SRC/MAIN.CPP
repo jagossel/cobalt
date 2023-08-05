@@ -130,7 +130,7 @@ int main() {
 }
 
 void redrawRegion(int startX, int startY, int endX, int endY) {
-	curs_set(false);
+	curs_set(0);
 	for (int redrawY = startY; redrawY <= endY; redrawY++) {
 		for (int redrawX = startX; redrawX <= endX; redrawX++) {
 			int yIndex = redrawY - minimumCursorY;
@@ -146,7 +146,7 @@ void redrawRegion(int startX, int startY, int endX, int endY) {
 
 	resetColors();
 	move(currentCursorY, currentCursorX);
-	curs_set(true);
+	curs_set(1);
 }
 
 void init() {
@@ -398,11 +398,10 @@ void resetCharacter() {
 }
 
 void showFullDrawing() {
-	curs_set(0);
-
 	int redrawRegionY = statusBarAtTop ? minimumCursorY : maximumCursorY;
 	redrawRegion(minimumCursorX, redrawRegionY, maximumCursorX, redrawRegionY);
-	getch();
 
+	curs_set(0);
+	getch();
 	curs_set(1);
 }
