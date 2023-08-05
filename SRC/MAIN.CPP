@@ -16,23 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
 #include <curses.h>
+#include "GLOBAL.H"
+#include "KEYDEF.H"
+#include "CHARSETS.H"
+#include "FUNCS.H"
+#include "FILEIO.H"
+#include "UI.H"
+#include "DRAWING.H"
 
 using namespace std;
-
-// There are some keys that are not working in PDCurses; here, we are going to define our own.
-#define COBALT_KEY_CTL_F     0x06
-#define COBALT_KEY_CTL_N     0x0E
-
-#define COBALT_KEY_BACKSPACE 0x08
-#define COBALT_KEY_ENTER     0x0D
-#define COBALT_KEY_ESCAPE    0x1B
-
-class DrawingCharacter {
-	public:
-		char character;
-		int foregroundColor;
-		int backgroundColor;
-};
 
 const int statusBarYTolerance = 2;
 const int minimumCharacterSetIndex = 0;
@@ -59,51 +51,6 @@ int currentForegroundColor = 7;
 int currentBackgroundColor = 0;
 
 DrawingCharacter canvas[25][80];
-
-char characterSets[11][10] =
-{
-	{ '\xB0', '\xB1', '\xB2', '\xDB', '\xDC', '\xDD', '\xDE', '\xDF', '\xFE', '\x20' },
-	{ '\xDA', '\xBF', '\xC4', '\xC2', '\xC1', '\xC3', '\xB4', '\xB3', '\xC0', '\xD9' },
-	{ '\xC9', '\xBB', '\xCD', '\xCB', '\xCA', '\xCC', '\xB9', '\xBA', '\xC8', '\xBC' },
-	{ '\xD6', '\xB7', '\xC4', '\xD2', '\xD0', '\xC7', '\xB6', '\xBA', '\xD3', '\xBD' },
-	{ '\xD5', '\xB8', '\xCD', '\xD1', '\xCF', '\xC6', '\xB5', '\xB3', '\xD4', '\xBE' },
-	{ '\xC5', '\xCE', '\xD7', '\xD8', '\xF0', '\xF4', '\xF5', '\xAE', '\xAF', '\xFE' },
-	{ '\x2E', '\xF9', '\xFA', '\xF8', '\x2A', '\x0F', '\xF0', '\xF1', '\xF2', '\xF3' },
-	{ '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD' },
-	{ '\x1E', '\x1F', '\x10', '\x11', '\x12', '\x1D', '\x18', '\x19', '\x1A', '\x1B' },
-	{ '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x0B', '\x0C', '\x0F', '\x20' }
-};
-
-// This is the same order as the ANSI display driver color list.
-short colorList[8] = {
-	COLOR_BLACK,
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_YELLOW,
-	COLOR_BLUE,
-	COLOR_MAGENTA,
-	COLOR_CYAN,
-	COLOR_WHITE
-};
-
-void redrawRegion(int startX, int startY, int endX, int endY);
-void init();
-void loadScreenSize();
-void handleKeyInput(int keyInput);
-void updateStatusBar();
-void initDrawing();
-void initColors();
-void setColors(int foregroundColor, int backgroundColor);
-void resetColors();
-int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex);
-void drawCharacterFromSet(int chracterIndex);
-void drawTypedCharacter(char typedCharacter);
-void advanceColumn(bool backwards);
-void advanceRow(bool backwards);
-void resetCharacter();
-void showFullDrawing();
-bool getConfirmation(const char* dialogMessage);
-void newDrawing();
 
 int main() {
 	initscr();
