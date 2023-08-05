@@ -19,6 +19,7 @@
 
 using namespace std;
 
+// There are some keys that are not working in PDCurses; here, we are going to define our own.
 #define COBALT_KEY_BACKSPACE 0x08
 #define COBALT_KEY_ENTER     0x0D
 #define COBALT_KEY_ESCAPE    0x1B
@@ -32,7 +33,7 @@ class DrawingCharacter {
 
 const int statusBarYTolerance = 2;
 const int minimumCharacterSetIndex = 0;
-const int maximumCharacterSetIndex = 10;
+const int maximumCharacterSetIndex = 9;
 const int minimumForegroundColor = 0;
 const int maximumForegroundColor = 15;
 const int minimumBackgroundColor = 0;
@@ -66,7 +67,6 @@ char characterSets[11][10] =
 	{ '\xC5', '\xCE', '\xD7', '\xD8', '\xF0', '\xF4', '\xF5', '\xAE', '\xAF', '\xFE' },
 	{ '\x2E', '\xF9', '\xFA', '\xF8', '\x2A', '\x0F', '\xF0', '\xF1', '\xF2', '\xF3' },
 	{ '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD' },
-	{ '\x31', '\x32', '\x33', '\x34', '\x35', '\x36', '\x37', '\x38', '\x39', '\x30' },
 	{ '\x1E', '\x1F', '\x10', '\x11', '\x12', '\x1D', '\x18', '\x19', '\x1A', '\x1B' },
 	{ '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x0B', '\x0C', '\x0F', '\x20' }
 };
@@ -93,6 +93,7 @@ void initColors();
 void setColors(int foregroundColor, int backgroundColor);
 void resetColors();
 int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex);
+void drawCharacterFromSet(int chracterIndex);
 void drawTypedCharacter(char typedCharacter);
 void advanceColumn(bool backwards);
 void advanceRow(bool backwards);
@@ -213,14 +214,16 @@ void handleKeyInput(int keyInput) {
 		} else {
 			currentBackgroundColor++;
 		}
+	} else if (keyInput >= KEY_F(1) && keyInput <= KEY_F(10)) {
+		drawCharacterFromSet(keyInput - KEY_F0 - 1);
 	} else if (keyInput >= 32 && keyInput <= 126) {
 		drawTypedCharacter(keyInput);
-	} else if (COBALT_KEY_BACKSPACE == keyInput) { // For some reason in PDCurses, KEY_BACKSPACE doesn't work.
+	} else if (COBALT_KEY_BACKSPACE == keyInput) {
 		advanceColumn(true);
 		resetCharacter();
 	} else if (KEY_DC == keyInput) {
 		resetCharacter();
-	} else if (COBALT_KEY_ENTER == keyInput) { // For some reason in PDCurses, KEY_ENTER doesn't work.
+	} else if (COBALT_KEY_ENTER == keyInput) {
 		if (currentCursorY >= maximumCursorY) return;
 		advanceRow(false);
 		currentCursorX = minimumCursorX;
@@ -340,6 +343,10 @@ void resetColors() {
 
 int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex) {
 	return (backgroundColorIndex * 16) + foregroundColorIndex;
+}
+
+void drawCharacterFromSet(int chracterIndex) {
+	drawTypedCharacter(characterSets[currentCharacterSetIndex][chracterIndex]);
 }
 
 void drawTypedCharacter(char typedCharacter) {
