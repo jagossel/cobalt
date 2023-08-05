@@ -15,20 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void init();
-void loadScreenSize();
-void initColors();
-void setColors(int foregroundColor, int backgroundColor);
-void resetColors();
+#ifndef DrawingCharacter_H
+#define DrawingCharacter_H
+#endif
 
-// This is the same order as the ANSI display driver color list.
-short colorList[8] = {
-	COLOR_BLACK,
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_YELLOW,
-	COLOR_BLUE,
-	COLOR_MAGENTA,
-	COLOR_CYAN,
-	COLOR_WHITE
+class DrawingCharacter {
+	char character;
+	int foregroundColor;
+	int backgroundColor;
+
+	public:
+		char getCharacter();
+		void setCharacter(char value);
+		int getForegroundColor();
+		void setForegroundColor(int value);
+		int getBackgroundColor();
+		void setBackgroundColor(int value);
 };

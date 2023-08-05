@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
 #include <curses.h>
+#include "DRAWCHAR.CPP"
+
 #include "GLOBAL.H"
 #include "KEYDEF.H"
 #include "CHARSETS.H"
@@ -86,12 +88,12 @@ void redrawRegion(int startX, int startY, int endX, int endY) {
 		for (int redrawX = startX; redrawX <= endX; redrawX++) {
 			int yIndex = redrawY - minimumCursorY;
 			int xIndex = redrawX - minimumCursorX;
-			int foregroundColor = canvas[yIndex][xIndex].foregroundColor;
-			int backgroundColor = canvas[yIndex][xIndex].backgroundColor;
+			int foregroundColor = canvas[yIndex][xIndex].getForegroundColor();
+			int backgroundColor = canvas[yIndex][xIndex].getBackgroundColor();
 
 			move(redrawY, redrawX);
 			setColors(foregroundColor, backgroundColor);
-			printw("%c", canvas[yIndex][xIndex].character);
+			printw("%c", canvas[yIndex][xIndex].getCharacter());
 		}
 	}
 
@@ -254,9 +256,9 @@ void updateStatusBar() {
 void initDrawing() {
 	for (int initY = 0; initY < 25; initY++) {
 		for (int initX = 0; initX < 80; initX++) {
-			canvas[initY][initX].character = ' ';
-			canvas[initY][initX].foregroundColor = 7;
-			canvas[initY][initX].backgroundColor = 0;
+			canvas[initY][initX].setCharacter(' ');
+			canvas[initY][initX].setForegroundColor(7);
+			canvas[initY][initX].setBackgroundColor(0);
 		}
 	}
 }
@@ -307,9 +309,9 @@ void drawCharacterFromSet(int chracterIndex) {
 }
 
 void drawTypedCharacter(char typedCharacter) {
-	canvas[currentCursorY][currentCursorX].character = typedCharacter;
-	canvas[currentCursorY][currentCursorX].foregroundColor = currentForegroundColor;
-	canvas[currentCursorY][currentCursorX].backgroundColor = currentBackgroundColor;
+	canvas[currentCursorY][currentCursorX].setCharacter(typedCharacter);
+	canvas[currentCursorY][currentCursorX].setForegroundColor(currentForegroundColor);
+	canvas[currentCursorY][currentCursorX].setBackgroundColor(currentBackgroundColor);
 
 	setColors(currentForegroundColor, currentBackgroundColor);
 	printw("%c", typedCharacter);
@@ -342,9 +344,9 @@ void advanceRow(bool backwards) {
 }
 
 void resetCharacter() {
-	canvas[currentCursorY][currentCursorX].character = ' ';
-	canvas[currentCursorY][currentCursorX].foregroundColor = 7;
-	canvas[currentCursorY][currentCursorX].backgroundColor = 0;
+	canvas[currentCursorY][currentCursorX].setCharacter(' ');
+	canvas[currentCursorY][currentCursorX].setForegroundColor(7);
+	canvas[currentCursorY][currentCursorX].setBackgroundColor(0);
 
 	setColors(7, 0);
 	printw("%c", ' ');

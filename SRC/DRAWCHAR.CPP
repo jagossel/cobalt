@@ -15,20 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void init();
-void loadScreenSize();
-void initColors();
-void setColors(int foregroundColor, int backgroundColor);
-void resetColors();
+#include "DRAWCHAR.HPP"
 
-// This is the same order as the ANSI display driver color list.
-short colorList[8] = {
-	COLOR_BLACK,
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_YELLOW,
-	COLOR_BLUE,
-	COLOR_MAGENTA,
-	COLOR_CYAN,
-	COLOR_WHITE
-};
+char DrawingCharacter::getCharacter() {
+	return this->character;
+}
+
+void DrawingCharacter::setCharacter(char value) {
+	this->character = value;
+}
+
+int DrawingCharacter::getForegroundColor() {
+	return this->foregroundColor;
+}
+
+void DrawingCharacter::setForegroundColor(int value) {
+	this->foregroundColor = value;
+}
+
+int DrawingCharacter::getBackgroundColor() {
+	return this->backgroundColor;
+}
+
+void DrawingCharacter::setBackgroundColor(int value) {
+	this->backgroundColor;
+}
