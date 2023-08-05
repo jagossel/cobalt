@@ -19,6 +19,10 @@
 
 using namespace std;
 
+#define COBALT_KEY_BACKSPACE 0x08
+#define COBALT_KEY_ENTER     0x0D
+#define COBALT_KEY_ESCAPE    0x1B
+
 class DrawingCharacter {
 	public:
 		char character;
@@ -92,6 +96,7 @@ int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex);
 void drawTypedCharacter(char typedCharacter);
 void advanceColumn(bool backwards);
 void advanceRow(bool backwards);
+void resetCharacter();
 
 int main() {
 	initscr();
@@ -166,6 +171,12 @@ void handleKeyInput(int keyInput) {
 		advanceColumn(true);
 	} else if (KEY_RIGHT == keyInput) {
 		advanceColumn(false);
+	} else if (KEY_HOME == keyInput) {
+		currentCursorX = minimumCursorX;
+		move(currentCursorY, currentCursorX);
+	} else if (KEY_END == keyInput) {
+		currentCursorX = maximumCursorX;
+		move(currentCursorY, currentCursorX);
 	} else if (ALT_UP == keyInput) {
 		if (currentCharacterSetIndex >= maximumCharacterSetIndex) {
 			currentCharacterSetIndex = minimumCharacterSetIndex;
@@ -204,7 +215,16 @@ void handleKeyInput(int keyInput) {
 		}
 	} else if (keyInput >= 32 && keyInput <= 126) {
 		drawTypedCharacter(keyInput);
-	} else if (27 == keyInput) {
+	} else if (COBALT_KEY_BACKSPACE == keyInput) { // For some reason in PDCurses, KEY_BACKSPACE doesn't work.
+		advanceColumn(true);
+		resetCharacter();
+	} else if (KEY_DC == keyInput) {
+		resetCharacter();
+	} else if (COBALT_KEY_ENTER == keyInput) { // For some reason in PDCurses, KEY_ENTER doesn't work.
+		if (currentCursorY >= maximumCursorY) return;
+		advanceRow(false);
+		currentCursorX = minimumCursorX;
+	} else if (COBALT_KEY_ESCAPE == keyInput) {
 		exitApplication = true;
 	}
 }
@@ -355,4 +375,13 @@ void advanceRow(bool backwards) {
 	}
 
 	move(currentCursorY, currentCursorX);
+}
+
+void resetCharacter() {
+	canvas[currentCursorY][currentCursorX].character = ' ';
+	canvas[currentCursorY][currentCursorX].foregroundColor = 7;
+	canvas[currentCursorY][currentCursorX].backgroundColor = 0;
+
+	setColors(7, 0);
+	printw("%c", ' ');
 }
