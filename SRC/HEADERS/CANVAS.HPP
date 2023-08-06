@@ -15,5 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void initDrawing();
-void newDrawing(Canvas* canvas);
+#ifndef CANVAS_H
+#define CANVAS_H
+
+class Canvas {
+	int minimumCursorX;
+	int currentCursorX;
+	int maximumCursorX;
+
+	int minimumCursorY;
+	int currentCursorY;
+	int maximumCursorY;
+
+	public:
+		Canvas() :
+			minimumCursorX(0),
+			currentCursorX(0),
+			maximumCursorX(0),
+			minimumCursorY(0),
+			currentCursorY(0),
+			maximumCursorY(0) { }
+		void resizeCanvas();
+		void moveUp();
+		void moveDown();
+		void moveLeft();
+		void moveRight();
+		void moveToHome();
+		void moveToEnd();
+		void moveToNextLine();
+		void reset();
+		int getMinimumCursorX();
+		int getCurrentCursorX();
+		int getMaximumCursorX();
+		int getMinimumCursorY();
+		int getCurrentCursorY();
+		int getMaximumCursorY();
+};
+
+#endif

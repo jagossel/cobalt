@@ -15,7 +15,5 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void handleKeyInput(int keyInput);
-void updateStatusBar();
-void advanceColumn(bool backwards);
-void advanceRow(bool backwards);
+void handleKeyInput(Canvas* canvas, int keyInput);
+void updateStatusBar(Canvas* canvas);

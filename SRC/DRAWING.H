@@ -15,8 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void drawCharacterFromSet(int chracterIndex);
-void drawTypedCharacter(char typedCharacter);
-void resetCharacter();
-void showFullDrawing();
-void redrawRegion(int startX, int startY, int endX, int endY);
+void drawCharacterFromSet(Canvas* canvas,int chracterIndex);
+void drawTypedCharacter(Canvas* canvas, char typedCharacter);
+void resetCharacter(Canvas* canvas);
+void showFullDrawing(Canvas* canvas);
+void redrawRegion(Canvas* canvas, int startX, int startY, int endX, int endY);

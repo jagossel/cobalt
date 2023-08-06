@@ -15,5 +15,5 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-bool getConfirmation(const char* dialogMessage);
+bool getConfirmation(Canvas* canvas, const char* dialogMessage);
 int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex);
