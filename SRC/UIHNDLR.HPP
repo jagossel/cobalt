@@ -15,8 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void drawCharacterFromSet(int chracterIndex);
-void drawTypedCharacter(char typedCharacter);
-void resetCharacter();
-void showFullDrawing();
-void redrawRegion(int startX, int startY, int endX, int endY);
+#include "CANVAS.HPP"
+#include "COLORING.HPP"
+#include "STATBAR.HPP"
+
+#ifndef UIHANDLER_H
+#define UIHANDLER_H
+
+class UiHandler {
+	Canvas* canvas;
+	Coloring* coloring;
+	StatusBar* statusBar;
+	bool exitApplication;
+
+	public:
+		UiHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef) :
+			exitApplication(false)
+		{
+			this->canvas = canvasRef;
+			this->coloring = coloringRef;
+			this->statusBar = statusBarRef;
+		}
+
+		bool getConfirmation(const char* dialogMessage);
+		bool getExitApplication();
+		void toggleExitApplication();
+};
+
+#endif

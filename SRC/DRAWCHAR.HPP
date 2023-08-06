@@ -15,5 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void initDrawing();
-void newDrawing();
+#ifndef DrawingCharacter_H
+#define DrawingCharacter_H
+
+struct DrawingCharacter {
+	char character;
+	int foregroundColor;
+	int backgroundColor;
+};
+
+#endif

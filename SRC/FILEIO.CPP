@@ -15,27 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-class DrawingCharacter {
-	public:
-		char character;
-		int foregroundColor;
-		int backgroundColor;
-};
+#include <CURSES.H>
+#include "FILEIO.HPP"
 
-void init();
-void loadScreenSize();
-void initColors();
-void setColors(int foregroundColor, int backgroundColor);
-void resetColors();
+void FileHandler::newDrawing() {
+	if (!this->uiHandler->getConfirmation("Start a new Drawing?")) return;
 
-// This is the same order as the ANSI display driver color list.
-short colorList[8] = {
-	COLOR_BLACK,
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_YELLOW,
-	COLOR_BLUE,
-	COLOR_MAGENTA,
-	COLOR_CYAN,
-	COLOR_WHITE
-};
+	canvas->reset();
+	coloring->reset();
+	canvas->initializeDrawing();
+	move(canvas->getCurrentCursorX(), canvas->getCurrentCursorY());
+}
