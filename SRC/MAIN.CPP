@@ -21,7 +21,6 @@
 
 #include "GLOBAL.H"
 #include "KEYDEF.H"
-#include "CHARSETS.H"
 #include "FUNCS.H"
 #include "FILEIO.H"
 #include "UI.H"
@@ -30,13 +29,9 @@
 using namespace std;
 
 const int statusBarYTolerance = 2;
-const int minimumCharacterSetIndex = 0;
-const int maximumCharacterSetIndex = 9;
 
 bool exitApplication = false;
 bool statusBarAtTop = false;
-
-int currentCharacterSetIndex = 0;
 
 DrawingCharacter drawingCanvas[25][80];
 
@@ -110,17 +105,9 @@ void handleKeyInput(Canvas* canvas, int keyInput) {
 	} else if (KEY_END == keyInput) {
 		canvas->moveToEnd();
 	} else if (ALT_UP == keyInput) {
-		if (currentCharacterSetIndex >= maximumCharacterSetIndex) {
-			currentCharacterSetIndex = minimumCharacterSetIndex;
-		} else {
-			currentCharacterSetIndex++;
-		}
+		canvas->nextCharacterSet();
 	} else if (ALT_DOWN == keyInput) {
-		if (currentCharacterSetIndex <= minimumCharacterSetIndex) {
-			currentCharacterSetIndex = maximumCharacterSetIndex;
-		} else {
-			currentCharacterSetIndex--;
-		}
+		canvas->previousCharacterSet();
 	} else if (CTL_UP == keyInput) {
 		canvas->previousForegroundColor();
 	} else if (CTL_DOWN == keyInput) {
@@ -214,16 +201,16 @@ void updateStatusBar(Canvas* canvas) {
 		printCurrentCursorX,
 		printCurrentCursorY,
 		'\xB3',
-		characterSets[currentCharacterSetIndex][0],
-		characterSets[currentCharacterSetIndex][1],
-		characterSets[currentCharacterSetIndex][2],
-		characterSets[currentCharacterSetIndex][3],
-		characterSets[currentCharacterSetIndex][4],
-		characterSets[currentCharacterSetIndex][5],
-		characterSets[currentCharacterSetIndex][6],
-		characterSets[currentCharacterSetIndex][7],
-		characterSets[currentCharacterSetIndex][8],
-		characterSets[currentCharacterSetIndex][9]);
+		canvas->getCharacterFromSet(0),
+		canvas->getCharacterFromSet(1),
+		canvas->getCharacterFromSet(2),
+		canvas->getCharacterFromSet(3),
+		canvas->getCharacterFromSet(4),
+		canvas->getCharacterFromSet(5),
+		canvas->getCharacterFromSet(6),
+		canvas->getCharacterFromSet(7),
+		canvas->getCharacterFromSet(8),
+		canvas->getCharacterFromSet(9));
 
 	resetColors();
 	curs_set(1);
@@ -281,8 +268,8 @@ int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex) {
 	return (backgroundColorIndex * 16) + foregroundColorIndex;
 }
 
-void drawCharacterFromSet(Canvas* canvas, int chracterIndex) {
-	drawTypedCharacter(canvas, characterSets[currentCharacterSetIndex][chracterIndex]);
+void drawCharacterFromSet(Canvas* canvas, int characterIndex) {
+	drawTypedCharacter(canvas, canvas->getCharacterFromSet(characterIndex));
 }
 
 void drawTypedCharacter(Canvas* canvas, char typedCharacter) {
@@ -359,7 +346,6 @@ bool getConfirmation(Canvas* canvas, const char* dialogMessage) {
 void newDrawing(Canvas* canvas) {
 	if (getConfirmation(canvas, "Start a new Drawing?")) {
 		canvas->reset();
-		currentCharacterSetIndex = 0;
 
 		move(canvas->getCurrentCursorX(), canvas->getCurrentCursorY());
 		initDrawing();

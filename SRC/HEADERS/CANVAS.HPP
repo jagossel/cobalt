@@ -25,6 +25,9 @@ class Canvas {
 	const int minimumBackgroundColor = 0;
 	const int maximumBackgroundColor = 15;
 
+	const int minimumCharacterSetIndex = 0;
+	const int maximumCharacterSetIndex = 9;
+
 	int minimumCursorX;
 	int currentCursorX;
 	int maximumCursorX;
@@ -36,6 +39,22 @@ class Canvas {
 	int currentForegroundColor;
 	int currentBackgroundColor;
 
+	int currentCharacterSetIndex;
+
+	char characterSets[10][10] =
+	{
+		{ '\xB0', '\xB1', '\xB2', '\xDB', '\xDC', '\xDD', '\xDE', '\xDF', '\xFE', '\x20' },
+		{ '\xDA', '\xBF', '\xC4', '\xC2', '\xC1', '\xC3', '\xB4', '\xB3', '\xC0', '\xD9' },
+		{ '\xC9', '\xBB', '\xCD', '\xCB', '\xCA', '\xCC', '\xB9', '\xBA', '\xC8', '\xBC' },
+		{ '\xD6', '\xB7', '\xC4', '\xD2', '\xD0', '\xC7', '\xB6', '\xBA', '\xD3', '\xBD' },
+		{ '\xD5', '\xB8', '\xCD', '\xD1', '\xCF', '\xC6', '\xB5', '\xB3', '\xD4', '\xBE' },
+		{ '\xC5', '\xCE', '\xD7', '\xD8', '\xF0', '\xF4', '\xF5', '\xAE', '\xAF', '\xFE' },
+		{ '\x2E', '\xF9', '\xFA', '\xF8', '\x2A', '\x0F', '\xF0', '\xF1', '\xF2', '\xF3' },
+		{ '\xF4', '\xF5', '\xF6', '\xF7', '\xF8', '\xF9', '\xFA', '\xFB', '\xFC', '\xFD' },
+		{ '\x1E', '\x1F', '\x10', '\x11', '\x12', '\x1D', '\x18', '\x19', '\x1A', '\x1B' },
+		{ '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x0B', '\x0C', '\x0F', '\x20' }
+	};
+
 	public:
 		Canvas() :
 			minimumCursorX(0),
@@ -45,7 +64,8 @@ class Canvas {
 			currentCursorY(0),
 			maximumCursorY(0),
 			currentForegroundColor(7),
-			currentBackgroundColor(0) { }
+			currentBackgroundColor(0),
+			currentCharacterSetIndex(0) { }
 		void resizeCanvas();
 		void moveUp();
 		void moveDown();
@@ -58,6 +78,8 @@ class Canvas {
 		void nextForegroundColor();
 		void previousBackgroundColor();
 		void nextBackgroundColor();
+		void previousCharacterSet();
+		void nextCharacterSet();
 		void reset();
 		int getMinimumCursorX();
 		int getCurrentCursorX();
@@ -65,12 +87,10 @@ class Canvas {
 		int getMinimumCursorY();
 		int getCurrentCursorY();
 		int getMaximumCursorY();
-		int getMinimumForegroundColor();
 		int getCurrentForegroundColor();
-		int getMaximumForegroundColor();
-		int getMinimumBackgroundColor();
 		int getCurrentBackgroundColor();
-		int getMaximumBackgroundColor();
+		int getCurrentCharacterSetIndex();
+		char getCharacterFromSet(int characterIndex);
 };
 
 #endif
