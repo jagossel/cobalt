@@ -32,17 +32,11 @@ using namespace std;
 const int statusBarYTolerance = 2;
 const int minimumCharacterSetIndex = 0;
 const int maximumCharacterSetIndex = 9;
-const int minimumForegroundColor = 0;
-const int maximumForegroundColor = 15;
-const int minimumBackgroundColor = 0;
-const int maximumBackgroundColor = 15;
 
 bool exitApplication = false;
 bool statusBarAtTop = false;
 
 int currentCharacterSetIndex = 0;
-int currentForegroundColor = 7;
-int currentBackgroundColor = 0;
 
 DrawingCharacter drawingCanvas[25][80];
 
@@ -128,29 +122,13 @@ void handleKeyInput(Canvas* canvas, int keyInput) {
 			currentCharacterSetIndex--;
 		}
 	} else if (CTL_UP == keyInput) {
-		if (currentForegroundColor <= minimumForegroundColor) {
-			currentForegroundColor = maximumForegroundColor;
-		} else {
-			currentForegroundColor--;
-		}
+		canvas->previousForegroundColor();
 	} else if (CTL_DOWN == keyInput) {
-		if (currentForegroundColor >= maximumForegroundColor) {
-			currentForegroundColor = minimumForegroundColor;
-		} else {
-			currentForegroundColor++;
-		}
+		canvas->nextForegroundColor();
 	} else if (CTL_LEFT == keyInput) {
-		if (currentBackgroundColor <= minimumBackgroundColor) {
-			currentBackgroundColor = maximumBackgroundColor;
-		} else {
-			currentBackgroundColor--;
-		}
+		canvas->previousBackgroundColor();
 	} else if (CTL_RIGHT == keyInput) {
-		if (currentBackgroundColor >= maximumBackgroundColor) {
-			currentBackgroundColor = minimumBackgroundColor;
-		} else {
-			currentBackgroundColor++;
-		}
+		canvas->nextBackgroundColor();
 	} else if (keyInput >= KEY_F(1) && keyInput <= KEY_F(10)) {
 		drawCharacterFromSet(canvas, keyInput - KEY_F0 - 1);
 	} else if (keyInput >= 32 && keyInput <= 126) {
@@ -179,6 +157,9 @@ void updateStatusBar(Canvas* canvas) {
 	int minimumCursorX = canvas->getMinimumCursorX();
 	int currentCursorX = canvas->getCurrentCursorX();
 	int maximumCursorX = canvas->getMaximumCursorX();
+
+	int currentForegroundColor = canvas->getCurrentForegroundColor();
+	int currentBackgroundColor = canvas->getCurrentBackgroundColor();
 
 	int toggleStatusBarMoveY = statusBarAtTop ?
 		minimumCursorY + statusBarYTolerance :
@@ -307,6 +288,9 @@ void drawCharacterFromSet(Canvas* canvas, int chracterIndex) {
 void drawTypedCharacter(Canvas* canvas, char typedCharacter) {
 	int currentCursorX = canvas->getCurrentCursorX();
 	int currentCursorY = canvas->getCurrentCursorY();
+	int currentForegroundColor = canvas->getCurrentForegroundColor();
+	int currentBackgroundColor = canvas->getCurrentBackgroundColor();
+
 	drawingCanvas[currentCursorY][currentCursorX].setCharacter(typedCharacter);
 	drawingCanvas[currentCursorY][currentCursorX].setForegroundColor(currentForegroundColor);
 	drawingCanvas[currentCursorY][currentCursorX].setBackgroundColor(currentBackgroundColor);
@@ -376,8 +360,6 @@ void newDrawing(Canvas* canvas) {
 	if (getConfirmation(canvas, "Start a new Drawing?")) {
 		canvas->reset();
 		currentCharacterSetIndex = 0;
-		currentForegroundColor = 7;
-		currentBackgroundColor = 0;
 
 		move(canvas->getCurrentCursorX(), canvas->getCurrentCursorY());
 		initDrawing();

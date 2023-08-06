@@ -19,6 +19,12 @@
 #define CANVAS_H
 
 class Canvas {
+	const int minimumForegroundColor = 0;
+	const int maximumForegroundColor = 15;
+
+	const int minimumBackgroundColor = 0;
+	const int maximumBackgroundColor = 15;
+
 	int minimumCursorX;
 	int currentCursorX;
 	int maximumCursorX;
@@ -27,6 +33,9 @@ class Canvas {
 	int currentCursorY;
 	int maximumCursorY;
 
+	int currentForegroundColor;
+	int currentBackgroundColor;
+
 	public:
 		Canvas() :
 			minimumCursorX(0),
@@ -34,7 +43,9 @@ class Canvas {
 			maximumCursorX(0),
 			minimumCursorY(0),
 			currentCursorY(0),
-			maximumCursorY(0) { }
+			maximumCursorY(0),
+			currentForegroundColor(7),
+			currentBackgroundColor(0) { }
 		void resizeCanvas();
 		void moveUp();
 		void moveDown();
@@ -43,6 +54,10 @@ class Canvas {
 		void moveToHome();
 		void moveToEnd();
 		void moveToNextLine();
+		void previousForegroundColor();
+		void nextForegroundColor();
+		void previousBackgroundColor();
+		void nextBackgroundColor();
 		void reset();
 		int getMinimumCursorX();
 		int getCurrentCursorX();
@@ -50,6 +65,12 @@ class Canvas {
 		int getMinimumCursorY();
 		int getCurrentCursorY();
 		int getMaximumCursorY();
+		int getMinimumForegroundColor();
+		int getCurrentForegroundColor();
+		int getMaximumForegroundColor();
+		int getMinimumBackgroundColor();
+		int getCurrentBackgroundColor();
+		int getMaximumBackgroundColor();
 };
 
 #endif
