@@ -15,4 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void handleKeyInput(Canvas* canvas, Coloring* coloring, StatusBar* statusBar, int keyInput);
+#include "CANVAS.HPP"
+#include "COLORING.HPP"
+#ifndef STATUSBAR_H
+#define STATUSBAR_H
+
+class StatusBar {
+	const int statusBarYTolerance = 2;
+
+	bool atTop;
+	Canvas* canvas;
+	Coloring* coloring;
+
+	public:
+		StatusBar(Canvas* canvasRef, Coloring* coloringRef) :
+			atTop(false)
+			{
+				this->canvas = canvasRef;
+				this->coloring = coloringRef;
+			}
+		bool getAtTop();
+		void updateStatusBar();
+};
+
+#endif

@@ -19,6 +19,7 @@
 #include "DRAWCHAR.HPP"
 #include "CANVAS.CPP"
 #include "COLORING.CPP"
+#include "STATBAR.CPP"
 
 #include "KEYDEF.H"
 #include "FUNCS.H"
@@ -27,10 +28,7 @@
 
 using namespace std;
 
-const int statusBarYTolerance = 2;
-
 bool exitApplication = false;
-bool statusBarAtTop = false;
 
 int main() {
 	initscr();
@@ -50,12 +48,16 @@ int main() {
 
 	canvasRef->initializeDrawing();
 	canvasRef->redrawAll();
+
+	StatusBar statusBar(canvasRef, coloringRef);
+	StatusBar* statusBarRef = &statusBar;
+
 	while (!exitApplication) {
 		canvasRef->resizeCanvas();
-		updateStatusBar(canvasRef, coloringRef);
+		statusBarRef->updateStatusBar();
 		refresh();
 		int keyInput = getch();
-		handleKeyInput(canvasRef, coloringRef, keyInput);
+		handleKeyInput(canvasRef, coloringRef, statusBarRef, keyInput);
 	}
 
 	clear();
@@ -65,7 +67,7 @@ int main() {
 	return 0;
 }
 
-void handleKeyInput(Canvas* canvas, Coloring* coloring, int keyInput) {
+void handleKeyInput(Canvas* canvas, Coloring* coloring, StatusBar* statusBar, int keyInput) {
 	if (KEY_UP == keyInput) {
 		canvas->moveUp();
 	} else if (KEY_DOWN == keyInput) {
@@ -104,89 +106,18 @@ void handleKeyInput(Canvas* canvas, Coloring* coloring, int keyInput) {
 	} else if (COBALT_KEY_CTL_F == keyInput) {
 		canvas->showFullDrawing();
 	} else if (COBALT_KEY_CTL_N == keyInput) {
-		newDrawing(canvas, coloring);
+		newDrawing(canvas, coloring, statusBar);
 	} else if (COBALT_KEY_ESCAPE == keyInput) {
 		exitApplication = true;
 	}
 }
 
-void updateStatusBar(Canvas* canvas, Coloring* coloring) {
-	int minimumCursorY = canvas->getMinimumCursorY();
-	int currentCursorY = canvas->getCurrentCursorY();
-	int maximumCursorY = canvas->getMaximumCursorY();
-
-	int minimumCursorX = canvas->getMinimumCursorX();
-	int currentCursorX = canvas->getCurrentCursorX();
-	int maximumCursorX = canvas->getMaximumCursorX();
-
-	int currentForegroundColor = coloring->getCurrentForegroundColor();
-	int currentBackgroundColor = coloring->getCurrentBackgroundColor();
-
-	int toggleStatusBarMoveY = statusBarAtTop ?
-		minimumCursorY + statusBarYTolerance :
-		maximumCursorY - statusBarYTolerance;
-
-	bool moveStatusBar = false;
-	if (statusBarAtTop) {
-		if (currentCursorY <= toggleStatusBarMoveY) {
-			statusBarAtTop = false;
-			moveStatusBar = true;
-		}
-	} else {
-		if (currentCursorY >= toggleStatusBarMoveY) {
-			statusBarAtTop = true;
-			moveStatusBar = true;
-		}
-	}
-
-	int statusBarY = statusBarAtTop ? minimumCursorY : maximumCursorY;
-	if (moveStatusBar) {
-		if (statusBarAtTop) {
-			canvas->redrawRegion(minimumCursorX, maximumCursorY, maximumCursorX, maximumCursorY);
-		} else {
-			canvas->redrawRegion(minimumCursorX, minimumCursorY, maximumCursorX, minimumCursorY);
-		}
-	}
-
-	curs_set(0);
-	coloring->applyColoring();
-	move(statusBarY, minimumCursorX);
-	printw("% 80c", ' ');
-
-	move(statusBarY, minimumCursorX);
-
-	int printCurrentCursorX = currentCursorX + 1;
-	int printCurrentCursorY = currentCursorY + 1;
-	printw(
-		"%02d,%02d%c%02d,%02d%cF1=%c F2=%c F3=%c F4=%c F5=%c F6=%c F7=%c F8=%c F9=%c F10=%c",
-		currentForegroundColor,
-		currentBackgroundColor,
-		'\xB3',
-		printCurrentCursorX,
-		printCurrentCursorY,
-		'\xB3',
-		canvas->getCharacterFromSet(0),
-		canvas->getCharacterFromSet(1),
-		canvas->getCharacterFromSet(2),
-		canvas->getCharacterFromSet(3),
-		canvas->getCharacterFromSet(4),
-		canvas->getCharacterFromSet(5),
-		canvas->getCharacterFromSet(6),
-		canvas->getCharacterFromSet(7),
-		canvas->getCharacterFromSet(8),
-		canvas->getCharacterFromSet(9));
-
-	coloring->resetColors();
-	curs_set(1);
-	move(currentCursorY, currentCursorX);
-}
-
-bool getConfirmation(Canvas* canvas, Coloring* coloring, const char* dialogMessage) {
+bool getConfirmation(Canvas* canvas, Coloring* coloring, StatusBar* statusBar, const char* dialogMessage) {
 	int minimumCursorX = canvas->getMinimumCursorY();
 	int minimumCursorY = canvas->getMinimumCursorY();
 	int maximumCursorY = canvas->getMaximumCursorY();
 
-	int dialogY = statusBarAtTop ? minimumCursorY : maximumCursorY;
+	int dialogY = statusBar->getAtTop() ? minimumCursorY : maximumCursorY;
 
 	move(dialogY, minimumCursorX);
 	coloring->setColors(7, 0);
@@ -211,8 +142,8 @@ bool getConfirmation(Canvas* canvas, Coloring* coloring, const char* dialogMessa
 	return confirmationResult;
 }
 
-void newDrawing(Canvas* canvas, Coloring* coloring) {
-	if (!getConfirmation(canvas, coloring, "Start a new Drawing?")) return;
+void newDrawing(Canvas* canvas, Coloring* coloring, StatusBar* statusBar) {
+	if (!getConfirmation(canvas, coloring, statusBar, "Start a new Drawing?")) return;
 
 	canvas->reset();
 	coloring->reset();
