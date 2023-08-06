@@ -16,7 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
 #include <CURSES.H>
-#include "HEADERS/CANVAS.HPP"
+#include "DRAWCHAR.HPP"
+#include "CANVAS.HPP"
 
 void Canvas::resizeCanvas() {
 	int minX, minY, maxX, maxY;
@@ -140,4 +141,76 @@ int Canvas::getCurrentCharacterSetIndex() {
 
 char Canvas::getCharacterFromSet(int characterIndex) {
 	return this->characterSets[this->currentCharacterSetIndex][characterIndex];
+}
+
+void Canvas::drawCharacterFromSet(int characterIndex) {
+	this->drawTypedCharacter(this->characterSets[this->currentCharacterSetIndex][characterIndex]);
+}
+
+void Canvas::drawTypedCharacter(char typedCharacter) {
+	int currentForegroundColor = this->coloring->getCurrentForegroundColor();
+	int currentBackgroundColor = this->coloring->getCurrentBackgroundColor();
+
+	this->drawingCanvas[this->currentCursorY][this->currentCursorX].character = typedCharacter;
+	this->drawingCanvas[this->currentCursorY][this->currentCursorX].foregroundColor = currentForegroundColor;
+	this->drawingCanvas[this->currentCursorY][this->currentCursorX].backgroundColor = currentBackgroundColor;
+
+	this->coloring->applyColoring();
+	printw("%c", typedCharacter);
+	this->coloring->resetColors();
+	this->moveRight();
+}
+
+void Canvas::resetCharacter() {
+	int currentCursorX = this->currentCursorX;
+	int currentCursorY = this->currentCursorY;
+	this->drawingCanvas[currentCursorY][currentCursorX].character = ' ';
+	this->drawingCanvas[currentCursorY][currentCursorX].foregroundColor = 7;
+	this->drawingCanvas[currentCursorY][currentCursorX].backgroundColor = 0;
+
+	this->coloring->setColors(7, 0);
+	printw("%c", ' ');
+}
+
+void Canvas::showFullDrawing() {
+	this->redrawAll();
+	curs_set(0);
+	getch();
+	curs_set(1);
+}
+
+void Canvas::redrawAll() {
+	this->redrawRegion(this->minimumCursorX, this->minimumCursorY, this->maximumCursorX, this->maximumCursorY);
+}
+
+void Canvas::redrawRegion(int startX, int startY, int endX, int endY) {
+	curs_set(0);
+	for (int redrawY = startY; redrawY <= endY; redrawY++) {
+		for (int redrawX = startX; redrawX <= endX; redrawX++) {
+			int yIndex = redrawY - this->minimumCursorY;
+			int xIndex = redrawX - this->minimumCursorX;
+			int foregroundColor = this->drawingCanvas[yIndex][xIndex].foregroundColor;
+			int backgroundColor = this->drawingCanvas[yIndex][xIndex].backgroundColor;
+
+			move(redrawY, redrawX);
+			this->coloring->setColors(foregroundColor, backgroundColor);
+			printw("%c", drawingCanvas[yIndex][xIndex].character);
+		}
+	}
+
+	this->coloring->resetColors();
+	move(this->currentCursorY, this->currentCursorX);
+	curs_set(1);
+}
+
+void Canvas::initializeDrawing() {
+	for (int initY = this->minimumCursorY; initY <= this->maximumCursorY; initY++) {
+		for (int initX = this->minimumCursorX; initX <= this->maximumCursorX; initX++) {
+			this->drawingCanvas[initY][initX].character = ' ';
+			this->drawingCanvas[initY][initX].foregroundColor = 7;
+			this->drawingCanvas[initY][initX].backgroundColor = 0;
+		}
+	}
+
+	this->redrawAll();
 }

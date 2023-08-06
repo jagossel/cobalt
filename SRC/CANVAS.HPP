@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include "DRAWCHAR.HPP"
+#include "COLORING.HPP"
 #ifndef CANVAS_H
 #define CANVAS_H
 
@@ -45,15 +47,18 @@ class Canvas {
 
 	int currentCharacterSetIndex;
 
+	DrawingCharacter drawingCanvas[25][80];
+	Coloring* coloring;
+
 	public:
-		Canvas() :
+		Canvas(Coloring* coloringRef) :
 			minimumCursorX(0),
 			currentCursorX(0),
 			maximumCursorX(0),
 			minimumCursorY(0),
 			currentCursorY(0),
 			maximumCursorY(0),
-			currentCharacterSetIndex(0) { }
+			currentCharacterSetIndex(0) { this->coloring = coloringRef; }
 		void resizeCanvas();
 		void moveUp();
 		void moveDown();
@@ -73,6 +78,13 @@ class Canvas {
 		int getMaximumCursorY();
 		int getCurrentCharacterSetIndex();
 		char getCharacterFromSet(int characterIndex);
+		void drawCharacterFromSet(int characterIndex);
+		void drawTypedCharacter(char typedCharacter);
+		void resetCharacter();
+		void showFullDrawing();
+		void redrawAll();
+		void redrawRegion(int startX, int startY, int endX, int endY);
+		void initializeDrawing();
 };
 
 #endif

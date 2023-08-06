@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
 #include <CURSES.H>
-#include "HEADERS/COLORING.HPP"
+#include "COLORING.HPP"
 
 void Coloring::initColors() {
 	for (int bg = this->minimumBackgroundColor; bg <= this->maximumBackgroundColor; bg++) {

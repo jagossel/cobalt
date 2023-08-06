@@ -15,8 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void drawCharacterFromSet(Canvas* canvas, Coloring* coloring, int chracterIndex);
-void drawTypedCharacter(Canvas* canvas, Coloring* coloring, char typedCharacter);
-void resetCharacter(Canvas* canvas, Coloring* coloring);
-void showFullDrawing(Canvas* canvas, Coloring* coloring);
-void redrawRegion(Canvas* canvas, Coloring* coloring, int startX, int startY, int endX, int endY);
+#ifndef DrawingCharacter_H
+#define DrawingCharacter_H
+
+struct DrawingCharacter {
+	char character;
+	int foregroundColor;
+	int backgroundColor;
+};
+
+#endif
