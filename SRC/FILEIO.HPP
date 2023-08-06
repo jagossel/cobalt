@@ -18,28 +18,27 @@
 #include "CANVAS.HPP"
 #include "COLORING.HPP"
 #include "STATBAR.HPP"
+#include "UIHNDLR.HPP"
 
-#ifndef UIHANDLER_H
-#define UIHANDLER_H
+#ifndef FILEIO_H
+#define FILEIO_H
 
-class UiHandler {
+class FileHandler {
 	Canvas* canvas;
 	Coloring* coloring;
 	StatusBar* statusBar;
-	bool exitApplication;
+	UiHandler* uiHandler;
 
 	public:
-		UiHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef) :
-			exitApplication(false)
+		FileHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef, UiHandler* uiHandlerRef)
 		{
 			this->canvas = canvasRef;
 			this->coloring = coloringRef;
 			this->statusBar = statusBarRef;
+			this->uiHandler = uiHandlerRef;
 		}
 
-		bool getConfirmation(const char* dialogMessage);
-		bool getExitApplication();
-		void toggleExitApplication();
+		void newDrawing();
 };
 
 #endif

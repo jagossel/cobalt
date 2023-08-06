@@ -17,29 +17,36 @@
  ***/
 #include "CANVAS.HPP"
 #include "COLORING.HPP"
-#include "STATBAR.HPP"
+#include "UIHNDLR.HPP"
+#include "FILEIO.HPP"
 
-#ifndef UIHANDLER_H
-#define UIHANDLER_H
+#ifndef KEYHANDLER_H
+#define KEYHANDLER_H
 
-class UiHandler {
+// There are some keys that are not working in PDCurses; here, we are going to define our own.
+#define COBALT_KEY_CTL_F     0x06
+#define COBALT_KEY_CTL_N     0x0E
+
+#define COBALT_KEY_BACKSPACE 0x08
+#define COBALT_KEY_ENTER     0x0D
+#define COBALT_KEY_ESCAPE    0x1B
+
+class KeyHandler {
 	Canvas* canvas;
 	Coloring* coloring;
-	StatusBar* statusBar;
-	bool exitApplication;
+	UiHandler* uiHandler;
+	FileHandler* fileHandler;
 
 	public:
-		UiHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef) :
-			exitApplication(false)
+		KeyHandler(Canvas* canvasRef, Coloring* coloringRef, UiHandler* uiHandlerRef, FileHandler* fileHandlerRef)
 		{
 			this->canvas = canvasRef;
 			this->coloring = coloringRef;
-			this->statusBar = statusBarRef;
+			this->uiHandler = uiHandlerRef;
+			this->fileHandler = fileHandlerRef;
 		}
 
-		bool getConfirmation(const char* dialogMessage);
-		bool getExitApplication();
-		void toggleExitApplication();
+		void handleKeyInput(int keyInput);
 };
 
 #endif

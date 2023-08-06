@@ -15,4 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void newDrawing(Canvas* canvas, Coloring* coloring, StatusBar* statusBar);
+#include <CURSES.H>
+#include "FILEIO.HPP"
+
+void FileHandler::newDrawing() {
+	if (!this->uiHandler->getConfirmation("Start a new Drawing?")) return;
+
+	canvas->reset();
+	coloring->reset();
+	canvas->initializeDrawing();
+	move(canvas->getCurrentCursorX(), canvas->getCurrentCursorY());
+}

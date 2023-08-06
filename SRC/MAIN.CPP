@@ -21,8 +21,8 @@
 #include "COLORING.CPP"
 #include "STATBAR.CPP"
 #include "UIHNDLR.CPP"
-
-#include "FILEIO.H"
+#include "KEYHNDLR.CPP"
+#include "FILEIO.CPP"
 
 using namespace std;
 
@@ -41,7 +41,6 @@ int main() {
 	Canvas canvas(coloringRef);
 	Canvas* canvasRef = &canvas;
 	canvasRef->resizeCanvas();
-
 	canvasRef->initializeDrawing();
 	canvasRef->redrawAll();
 
@@ -50,12 +49,19 @@ int main() {
 
 	UiHandler uiHandler(canvasRef, coloringRef, statusBarRef);
 	UiHandler* uiHandlerRef = &uiHandler;
+
+	FileHandler fileHandler(canvasRef, coloringRef, statusBarRef ,uiHandlerRef);
+	FileHandler* fileHandlerRef = &fileHandler;
+
+	KeyHandler keyHandler(canvasRef, coloringRef, uiHandlerRef, fileHandlerRef);
+	KeyHandler* keyHandlerRef = &keyHandler;
+
 	while (!uiHandlerRef->getExitApplication()) {
 		canvasRef->resizeCanvas();
 		statusBarRef->updateStatusBar();
 		refresh();
 		int keyInput = getch();
-		uiHandlerRef->handleKeyInput(keyInput);
+		keyHandlerRef->handleKeyInput(keyInput);
 	}
 
 	clear();
@@ -63,13 +69,4 @@ int main() {
 	endwin();
 
 	return 0;
-}
-
-void newDrawing(Canvas* canvas, Coloring* coloring, UiHandler* uiHandler) {
-	if (!uiHandler->getConfirmation("Start a new Drawing?")) return;
-
-	canvas->reset();
-	coloring->reset();
-	canvas->initializeDrawing();
-	move(canvas->getCurrentCursorX(), canvas->getCurrentCursorY());
 }
