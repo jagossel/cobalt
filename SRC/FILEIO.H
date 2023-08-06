@@ -16,4 +16,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
 void initDrawing();
-void newDrawing(Canvas* canvas);
+void newDrawing(Canvas* canvas, Coloring* coloring);

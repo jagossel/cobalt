@@ -88,38 +88,6 @@ void Canvas::moveToNextLine() {
 	this->moveToHome();
 }
 
-void Canvas::previousForegroundColor() {
-	if (this->currentForegroundColor <= this->minimumForegroundColor) {
-		this->currentForegroundColor = this->maximumForegroundColor;
-	} else {
-		this->currentForegroundColor--;
-	}
-}
-
-void Canvas::nextForegroundColor() {
-	if (this->currentForegroundColor >= this->maximumForegroundColor) {
-		this->currentForegroundColor = this->minimumForegroundColor;
-	} else {
-		this->currentForegroundColor++;
-	}
-}
-
-void Canvas::previousBackgroundColor() {
-	if (this->currentBackgroundColor <= this->minimumBackgroundColor) {
-		this->currentBackgroundColor = this->maximumBackgroundColor;
-	} else {
-		this->currentBackgroundColor--;
-	}
-}
-
-void Canvas::nextBackgroundColor() {
-	if (this->currentBackgroundColor >= this->maximumBackgroundColor) {
-		this->currentBackgroundColor = this->minimumBackgroundColor;
-	} else {
-		this->currentBackgroundColor++;
-	}
-}
-
 void Canvas::previousCharacterSet() {
 	if (this->currentCharacterSetIndex <= this->minimumCharacterSetIndex) {
 		this->currentCharacterSetIndex = this->maximumCharacterSetIndex;
@@ -139,8 +107,6 @@ void Canvas::nextCharacterSet() {
 void Canvas::reset() {
 	this->currentCursorX = minimumCursorX;
 	this->currentCursorY = minimumCursorY;
-	this->currentForegroundColor = 7;
-	this->currentBackgroundColor = 0;
 	this->currentCharacterSetIndex = minimumCharacterSetIndex;
 }
 
@@ -166,14 +132,6 @@ int Canvas::getCurrentCursorY() {
 
 int Canvas::getMaximumCursorY() {
 	return this->maximumCursorY;
-}
-
-int Canvas::getCurrentForegroundColor() {
-	return this->currentForegroundColor;
-}
-
-int Canvas::getCurrentBackgroundColor() {
-	return this->currentBackgroundColor;
 }
 
 int Canvas::getCurrentCharacterSetIndex() {

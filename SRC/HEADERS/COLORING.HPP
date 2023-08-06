@@ -15,8 +15,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void drawCharacterFromSet(Canvas* canvas, Coloring* coloring, int chracterIndex);
-void drawTypedCharacter(Canvas* canvas, Coloring* coloring, char typedCharacter);
-void resetCharacter(Canvas* canvas);
-void showFullDrawing(Canvas* canvas);
-void redrawRegion(Canvas* canvas, int startX, int startY, int endX, int endY);
+#ifndef COLORING_H
+#define COLORING_H
+
+class Coloring {
+	const int minimumForegroundColor = 0;
+	const int maximumForegroundColor = 15;
+
+	const int minimumBackgroundColor = 0;
+	const int maximumBackgroundColor = 15;
+
+	int currentForegroundColor;
+	int currentBackgroundColor;
+
+	public:
+		Coloring():
+			currentForegroundColor(7),
+			currentBackgroundColor(0) { }
+		void previousForegroundColor();
+		void nextForegroundColor();
+		void previousBackgroundColor();
+		void nextBackgroundColor();
+		void reset();
+		int getCurrentForegroundColor();
+		int getCurrentBackgroundColor();
+};
+
+#endif

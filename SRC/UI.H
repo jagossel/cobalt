@@ -15,5 +15,5 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-void handleKeyInput(Canvas* canvas, int keyInput);
-void updateStatusBar(Canvas* canvas);
+void handleKeyInput(Canvas* canvas, Coloring* coloring, int keyInput);
+void updateStatusBar(Canvas* canvas, Coloring* coloring);

@@ -18,6 +18,7 @@
 #include <curses.h>
 #include "DRAWCHAR.CPP"
 #include "CANVAS.CPP"
+#include "COLORING.CPP"
 
 #include "GLOBAL.H"
 #include "KEYDEF.H"
@@ -47,6 +48,9 @@ int main() {
 	Canvas* canvasRef = &canvas;
 	canvasRef->resizeCanvas();
 
+	Coloring coloring;
+	Coloring* coloringRef = &coloring;
+
 	initDrawing();
 	initColors();
 	redrawRegion(
@@ -58,10 +62,10 @@ int main() {
 
 	while (!exitApplication) {
 		canvasRef->resizeCanvas();
-		updateStatusBar(canvasRef);
+		updateStatusBar(canvasRef, coloringRef);
 		refresh();
 		int keyInput = getch();
-		handleKeyInput(canvasRef, keyInput);
+		handleKeyInput(canvasRef, coloringRef, keyInput);
 	}
 
 	clear();
@@ -91,7 +95,7 @@ void redrawRegion(Canvas* canvas, int startX, int startY, int endX, int endY) {
 	curs_set(1);
 }
 
-void handleKeyInput(Canvas* canvas, int keyInput) {
+void handleKeyInput(Canvas* canvas, Coloring* coloring, int keyInput) {
 	if (KEY_UP == keyInput) {
 		canvas->moveUp();
 	} else if (KEY_DOWN == keyInput) {
@@ -109,17 +113,17 @@ void handleKeyInput(Canvas* canvas, int keyInput) {
 	} else if (ALT_DOWN == keyInput) {
 		canvas->previousCharacterSet();
 	} else if (CTL_UP == keyInput) {
-		canvas->previousForegroundColor();
+		coloring->previousForegroundColor();
 	} else if (CTL_DOWN == keyInput) {
-		canvas->nextForegroundColor();
+		coloring->nextForegroundColor();
 	} else if (CTL_LEFT == keyInput) {
-		canvas->previousBackgroundColor();
+		coloring->previousBackgroundColor();
 	} else if (CTL_RIGHT == keyInput) {
-		canvas->nextBackgroundColor();
+		coloring->nextBackgroundColor();
 	} else if (keyInput >= KEY_F(1) && keyInput <= KEY_F(10)) {
-		drawCharacterFromSet(canvas, keyInput - KEY_F0 - 1);
+		drawCharacterFromSet(canvas, coloring, keyInput - KEY_F0 - 1);
 	} else if (keyInput >= 32 && keyInput <= 126) {
-		drawTypedCharacter(canvas, keyInput);
+		drawTypedCharacter(canvas, coloring, keyInput);
 	} else if (COBALT_KEY_BACKSPACE == keyInput) {
 		canvas->moveLeft();
 		resetCharacter(canvas);
@@ -130,13 +134,13 @@ void handleKeyInput(Canvas* canvas, int keyInput) {
 	} else if (COBALT_KEY_CTL_F == keyInput) {
 		showFullDrawing(canvas);
 	} else if (COBALT_KEY_CTL_N == keyInput) {
-		newDrawing(canvas);
+		newDrawing(canvas, coloring);
 	} else if (COBALT_KEY_ESCAPE == keyInput) {
 		exitApplication = true;
 	}
 }
 
-void updateStatusBar(Canvas* canvas) {
+void updateStatusBar(Canvas* canvas, Coloring* coloring) {
 	int minimumCursorY = canvas->getMinimumCursorY();
 	int currentCursorY = canvas->getCurrentCursorY();
 	int maximumCursorY = canvas->getMaximumCursorY();
@@ -145,8 +149,8 @@ void updateStatusBar(Canvas* canvas) {
 	int currentCursorX = canvas->getCurrentCursorX();
 	int maximumCursorX = canvas->getMaximumCursorX();
 
-	int currentForegroundColor = canvas->getCurrentForegroundColor();
-	int currentBackgroundColor = canvas->getCurrentBackgroundColor();
+	int currentForegroundColor = coloring->getCurrentForegroundColor();
+	int currentBackgroundColor = coloring->getCurrentBackgroundColor();
 
 	int toggleStatusBarMoveY = statusBarAtTop ?
 		minimumCursorY + statusBarYTolerance :
@@ -268,15 +272,15 @@ int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex) {
 	return (backgroundColorIndex * 16) + foregroundColorIndex;
 }
 
-void drawCharacterFromSet(Canvas* canvas, int characterIndex) {
-	drawTypedCharacter(canvas, canvas->getCharacterFromSet(characterIndex));
+void drawCharacterFromSet(Canvas* canvas, Coloring* coloring, int characterIndex) {
+	drawTypedCharacter(canvas, coloring, canvas->getCharacterFromSet(characterIndex));
 }
 
-void drawTypedCharacter(Canvas* canvas, char typedCharacter) {
+void drawTypedCharacter(Canvas* canvas, Coloring* coloring, char typedCharacter) {
 	int currentCursorX = canvas->getCurrentCursorX();
 	int currentCursorY = canvas->getCurrentCursorY();
-	int currentForegroundColor = canvas->getCurrentForegroundColor();
-	int currentBackgroundColor = canvas->getCurrentBackgroundColor();
+	int currentForegroundColor = coloring->getCurrentForegroundColor();
+	int currentBackgroundColor = coloring->getCurrentBackgroundColor();
 
 	drawingCanvas[currentCursorY][currentCursorX].setCharacter(typedCharacter);
 	drawingCanvas[currentCursorY][currentCursorX].setForegroundColor(currentForegroundColor);
@@ -343,9 +347,10 @@ bool getConfirmation(Canvas* canvas, const char* dialogMessage) {
 	return confirmationResult;
 }
 
-void newDrawing(Canvas* canvas) {
+void newDrawing(Canvas* canvas, Coloring* coloring) {
 	if (getConfirmation(canvas, "Start a new Drawing?")) {
 		canvas->reset();
+		coloring->reset();
 
 		move(canvas->getCurrentCursorX(), canvas->getCurrentCursorY());
 		initDrawing();

@@ -19,12 +19,6 @@
 #define CANVAS_H
 
 class Canvas {
-	const int minimumForegroundColor = 0;
-	const int maximumForegroundColor = 15;
-
-	const int minimumBackgroundColor = 0;
-	const int maximumBackgroundColor = 15;
-
 	const int minimumCharacterSetIndex = 0;
 	const int maximumCharacterSetIndex = 9;
 
@@ -35,9 +29,6 @@ class Canvas {
 	int minimumCursorY;
 	int currentCursorY;
 	int maximumCursorY;
-
-	int currentForegroundColor;
-	int currentBackgroundColor;
 
 	int currentCharacterSetIndex;
 
@@ -63,8 +54,6 @@ class Canvas {
 			minimumCursorY(0),
 			currentCursorY(0),
 			maximumCursorY(0),
-			currentForegroundColor(7),
-			currentBackgroundColor(0),
 			currentCharacterSetIndex(0) { }
 		void resizeCanvas();
 		void moveUp();
@@ -74,10 +63,6 @@ class Canvas {
 		void moveToHome();
 		void moveToEnd();
 		void moveToNextLine();
-		void previousForegroundColor();
-		void nextForegroundColor();
-		void previousBackgroundColor();
-		void nextBackgroundColor();
 		void previousCharacterSet();
 		void nextCharacterSet();
 		void reset();
@@ -87,8 +72,6 @@ class Canvas {
 		int getMinimumCursorY();
 		int getCurrentCursorY();
 		int getMaximumCursorY();
-		int getCurrentForegroundColor();
-		int getCurrentBackgroundColor();
 		int getCurrentCharacterSetIndex();
 		char getCharacterFromSet(int characterIndex);
 };
