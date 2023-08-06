@@ -17,6 +17,20 @@
  ***/
 #include "HEADERS/COLORING.HPP"
 
+void Coloring::initColors() {
+	for (int bg = this->minimumBackgroundColor; bg <= this->maximumBackgroundColor; bg++) {
+		int backgroundColorIndex = bg % 8;
+		short backgroundColor = colorList[backgroundColorIndex];
+		for (int fg = this->minimumForegroundColor; fg <= this->maximumForegroundColor; fg++) {
+			int foregroundColorIndex = fg % 8;
+			int colorPairIndex = COLOR_PAIR_INDEX(fg, bg);
+			short foregroundColor = colorList[foregroundColorIndex];
+
+			init_pair(colorPairIndex, foregroundColor, backgroundColor);
+		}
+	}
+}
+
 void Coloring::previousForegroundColor() {
 	if (this->currentForegroundColor <= this->minimumForegroundColor) {
 		this->currentForegroundColor = this->maximumForegroundColor;
@@ -52,6 +66,33 @@ void Coloring::nextBackgroundColor() {
 void Coloring::reset() {
 	this->currentForegroundColor = 7;
 	this->currentBackgroundColor = 0;
+}
+
+void Coloring::applyColoring() {
+	this->setColors(this->currentForegroundColor, this->currentBackgroundColor);
+}
+
+void Coloring::setColors(int foregroundColor, int backgroundColor) {
+	int colorPairIndex = COLOR_PAIR_INDEX(foregroundColor, backgroundColor);
+	attron(COLOR_PAIR(colorPairIndex));
+	if (foregroundColor > 7) {
+		attron(A_BOLD);
+	} else {
+		attroff(A_BOLD);
+	}
+
+	if (backgroundColor > 7) {
+		attron(A_BLINK);
+	} else {
+		attroff(A_BLINK);
+	}
+}
+
+void Coloring::resetColors() {
+	int colorPairIndex = COLOR_PAIR_INDEX(7, 0);
+	attroff(COLOR_PAIR(colorPairIndex));
+	attroff(A_BOLD);
+	attroff(A_BLINK);
 }
 
 int Coloring::getCurrentForegroundColor() {

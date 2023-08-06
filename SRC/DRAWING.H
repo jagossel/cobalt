@@ -17,6 +17,6 @@
  ***/
 void drawCharacterFromSet(Canvas* canvas, Coloring* coloring, int chracterIndex);
 void drawTypedCharacter(Canvas* canvas, Coloring* coloring, char typedCharacter);
-void resetCharacter(Canvas* canvas);
-void showFullDrawing(Canvas* canvas);
-void redrawRegion(Canvas* canvas, int startX, int startY, int endX, int endY);
+void resetCharacter(Canvas* canvas, Coloring* coloring);
+void showFullDrawing(Canvas* canvas, Coloring* coloring);
+void redrawRegion(Canvas* canvas, Coloring* coloring, int startX, int startY, int endX, int endY);

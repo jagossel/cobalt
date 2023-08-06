@@ -18,9 +18,22 @@
 #ifndef COLORING_H
 #define COLORING_H
 
+#define COLOR_PAIR_INDEX(fgc, bgc) ((bgc * 16) + fgc)
+
 class Coloring {
 	const int minimumForegroundColor = 0;
 	const int maximumForegroundColor = 15;
+	// This is the same order as the ANSI display driver color list.
+	const short colorList[8] = {
+		COLOR_BLACK,
+		COLOR_RED,
+		COLOR_GREEN,
+		COLOR_YELLOW,
+		COLOR_BLUE,
+		COLOR_MAGENTA,
+		COLOR_CYAN,
+		COLOR_WHITE
+	};
 
 	const int minimumBackgroundColor = 0;
 	const int maximumBackgroundColor = 15;
@@ -32,11 +45,15 @@ class Coloring {
 		Coloring():
 			currentForegroundColor(7),
 			currentBackgroundColor(0) { }
+		void initColors();
 		void previousForegroundColor();
 		void nextForegroundColor();
 		void previousBackgroundColor();
 		void nextBackgroundColor();
 		void reset();
+		void applyColoring();
+		void setColors(int foregroundColor, int backgroundColor);
+		void resetColors();
 		int getCurrentForegroundColor();
 		int getCurrentBackgroundColor();
 };

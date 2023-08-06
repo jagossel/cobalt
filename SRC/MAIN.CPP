@@ -20,7 +20,6 @@
 #include "CANVAS.CPP"
 #include "COLORING.CPP"
 
-#include "GLOBAL.H"
 #include "KEYDEF.H"
 #include "FUNCS.H"
 #include "FILEIO.H"
@@ -50,11 +49,12 @@ int main() {
 
 	Coloring coloring;
 	Coloring* coloringRef = &coloring;
+	coloringRef->initColors();
 
 	initDrawing();
-	initColors();
 	redrawRegion(
 		canvasRef,
+		coloringRef,
 		canvasRef->getMinimumCursorX(),
 		canvasRef->getMinimumCursorY(),
 		canvasRef->getMaximumCursorX(),
@@ -75,7 +75,7 @@ int main() {
 	return 0;
 }
 
-void redrawRegion(Canvas* canvas, int startX, int startY, int endX, int endY) {
+void redrawRegion(Canvas* canvas, Coloring* coloring, int startX, int startY, int endX, int endY) {
 	curs_set(0);
 	for (int redrawY = startY; redrawY <= endY; redrawY++) {
 		for (int redrawX = startX; redrawX <= endX; redrawX++) {
@@ -85,12 +85,12 @@ void redrawRegion(Canvas* canvas, int startX, int startY, int endX, int endY) {
 			int backgroundColor = drawingCanvas[yIndex][xIndex].getBackgroundColor();
 
 			move(redrawY, redrawX);
-			setColors(foregroundColor, backgroundColor);
+			coloring->setColors(foregroundColor, backgroundColor);
 			printw("%c", drawingCanvas[yIndex][xIndex].getCharacter());
 		}
 	}
 
-	resetColors();
+	coloring->resetColors();
 	move(canvas->getCurrentCursorY(), canvas->getCurrentCursorX());
 	curs_set(1);
 }
@@ -126,13 +126,13 @@ void handleKeyInput(Canvas* canvas, Coloring* coloring, int keyInput) {
 		drawTypedCharacter(canvas, coloring, keyInput);
 	} else if (COBALT_KEY_BACKSPACE == keyInput) {
 		canvas->moveLeft();
-		resetCharacter(canvas);
+		resetCharacter(canvas, coloring);
 	} else if (KEY_DC == keyInput) {
-		resetCharacter(canvas);
+		resetCharacter(canvas, coloring);
 	} else if (COBALT_KEY_ENTER == keyInput) {
 		canvas->moveToNextLine();
 	} else if (COBALT_KEY_CTL_F == keyInput) {
-		showFullDrawing(canvas);
+		showFullDrawing(canvas, coloring);
 	} else if (COBALT_KEY_CTL_N == keyInput) {
 		newDrawing(canvas, coloring);
 	} else if (COBALT_KEY_ESCAPE == keyInput) {
@@ -174,6 +174,7 @@ void updateStatusBar(Canvas* canvas, Coloring* coloring) {
 		if (statusBarAtTop) {
 			redrawRegion(
 				canvas,
+				coloring,
 				minimumCursorX,
 				maximumCursorY,
 				maximumCursorX,
@@ -181,6 +182,7 @@ void updateStatusBar(Canvas* canvas, Coloring* coloring) {
 		} else {
 			redrawRegion(
 				canvas,
+				coloring,
 				minimumCursorX,
 				minimumCursorY,
 				maximumCursorX,
@@ -189,7 +191,7 @@ void updateStatusBar(Canvas* canvas, Coloring* coloring) {
 	}
 
 	curs_set(0);
-	setColors(currentForegroundColor, currentBackgroundColor);
+	coloring->applyColoring();
 	move(statusBarY, minimumCursorX);
 	printw("% 80c", ' ');
 
@@ -216,7 +218,7 @@ void updateStatusBar(Canvas* canvas, Coloring* coloring) {
 		canvas->getCharacterFromSet(8),
 		canvas->getCharacterFromSet(9));
 
-	resetColors();
+	coloring->resetColors();
 	curs_set(1);
 	move(currentCursorY, currentCursorX);
 }
@@ -229,47 +231,6 @@ void initDrawing() {
 			drawingCanvas[initY][initX].setBackgroundColor(0);
 		}
 	}
-}
-
-void initColors() {
-	for (int initBackgroundColor = 0; initBackgroundColor < 16; initBackgroundColor++) {
-		int backgroundColorIndex = initBackgroundColor % 8;
-		short backgroundColor = colorList[backgroundColorIndex];
-		for (int initForegroundColor = 0; initForegroundColor < 16; initForegroundColor++) {
-			int foregroundColorIndex = initForegroundColor % 8;
-			int colorPairIndex = getColorPairIndex(initForegroundColor, initBackgroundColor);
-			short foregroundColor = colorList[foregroundColorIndex];
-
-			init_pair(colorPairIndex, foregroundColor, backgroundColor);
-		}
-	}
-}
-
-void setColors(int foregroundColor, int backgroundColor) {
-	int colorPairIndex = getColorPairIndex(foregroundColor, backgroundColor);
-	attron(COLOR_PAIR(colorPairIndex));
-	if (foregroundColor > 7) {
-		attron(A_BOLD);
-	} else {
-		attroff(A_BOLD);
-	}
-
-	if (backgroundColor > 7) {
-		attron(A_BLINK);
-	} else {
-		attroff(A_BLINK);
-	}
-}
-
-void resetColors() {
-	int colorPairIndex = getColorPairIndex(7, 0);
-	attroff(COLOR_PAIR(colorPairIndex));
-	attroff(A_BOLD);
-	attroff(A_BLINK);
-}
-
-int getColorPairIndex(int foregroundColorIndex, int backgroundColorIndex) {
-	return (backgroundColorIndex * 16) + foregroundColorIndex;
 }
 
 void drawCharacterFromSet(Canvas* canvas, Coloring* coloring, int characterIndex) {
@@ -286,38 +247,38 @@ void drawTypedCharacter(Canvas* canvas, Coloring* coloring, char typedCharacter)
 	drawingCanvas[currentCursorY][currentCursorX].setForegroundColor(currentForegroundColor);
 	drawingCanvas[currentCursorY][currentCursorX].setBackgroundColor(currentBackgroundColor);
 
-	setColors(currentForegroundColor, currentBackgroundColor);
+	coloring->applyColoring();
 	printw("%c", typedCharacter);
-	resetColors();
+	coloring->resetColors();
 	canvas->moveRight();
 }
 
-void resetCharacter(Canvas* canvas) {
+void resetCharacter(Canvas* canvas, Coloring* coloring) {
 	int currentCursorX = canvas->getCurrentCursorX();
 	int currentCursorY = canvas->getCurrentCursorY();
 	drawingCanvas[currentCursorY][currentCursorX].setCharacter(' ');
 	drawingCanvas[currentCursorY][currentCursorX].setForegroundColor(7);
 	drawingCanvas[currentCursorY][currentCursorX].setBackgroundColor(0);
 
-	setColors(7, 0);
+	coloring->setColors(7, 0);
 	printw("%c", ' ');
 }
 
-void showFullDrawing(Canvas* canvas) {
+void showFullDrawing(Canvas* canvas, Coloring* coloring) {
 	int minimumCursorX = canvas->getMinimumCursorX();
 	int maximumCursorX = canvas->getMaximumCursorX();
 	int minimumCursorY = canvas->getMinimumCursorY();
 	int maximumCursorY = canvas->getMaximumCursorY();
 
 	int redrawRegionY = statusBarAtTop ? minimumCursorY : maximumCursorY;
-	redrawRegion(canvas, minimumCursorX, redrawRegionY, maximumCursorX, redrawRegionY);
+	redrawRegion(canvas, coloring, minimumCursorX, redrawRegionY, maximumCursorX, redrawRegionY);
 
 	curs_set(0);
 	getch();
 	curs_set(1);
 }
 
-bool getConfirmation(Canvas* canvas, const char* dialogMessage) {
+bool getConfirmation(Canvas* canvas, Coloring* coloring, const char* dialogMessage) {
 	int minimumCursorX = canvas->getMinimumCursorY();
 	int minimumCursorY = canvas->getMinimumCursorY();
 	int maximumCursorY = canvas->getMaximumCursorY();
@@ -325,11 +286,11 @@ bool getConfirmation(Canvas* canvas, const char* dialogMessage) {
 	int dialogY = statusBarAtTop ? minimumCursorY : maximumCursorY;
 
 	move(dialogY, minimumCursorX);
-	setColors(7, 0);
+	coloring->setColors(7, 0);
 	printw("% 80c", ' ');
 
 	move(dialogY, minimumCursorX);
-	setColors(9, 0);
+	coloring->setColors(9, 0);
 	printw("%s (Y/N) ", dialogMessage);
 
 	bool confirmationResult = false;
@@ -348,7 +309,7 @@ bool getConfirmation(Canvas* canvas, const char* dialogMessage) {
 }
 
 void newDrawing(Canvas* canvas, Coloring* coloring) {
-	if (getConfirmation(canvas, "Start a new Drawing?")) {
+	if (getConfirmation(canvas, coloring, "Start a new Drawing?")) {
 		canvas->reset();
 		coloring->reset();
 
@@ -358,6 +319,7 @@ void newDrawing(Canvas* canvas, Coloring* coloring) {
 
 	redrawRegion(
 		canvas,
+		coloring,
 		canvas->getMinimumCursorX(),
 		canvas->getMinimumCursorY(),
 		canvas->getMaximumCursorX(),

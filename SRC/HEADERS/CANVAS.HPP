@@ -21,18 +21,7 @@
 class Canvas {
 	const int minimumCharacterSetIndex = 0;
 	const int maximumCharacterSetIndex = 9;
-
-	int minimumCursorX;
-	int currentCursorX;
-	int maximumCursorX;
-
-	int minimumCursorY;
-	int currentCursorY;
-	int maximumCursorY;
-
-	int currentCharacterSetIndex;
-
-	char characterSets[10][10] =
+	const char characterSets[10][10] =
 	{
 		{ '\xB0', '\xB1', '\xB2', '\xDB', '\xDC', '\xDD', '\xDE', '\xDF', '\xFE', '\x20' },
 		{ '\xDA', '\xBF', '\xC4', '\xC2', '\xC1', '\xC3', '\xB4', '\xB3', '\xC0', '\xD9' },
@@ -45,6 +34,16 @@ class Canvas {
 		{ '\x1E', '\x1F', '\x10', '\x11', '\x12', '\x1D', '\x18', '\x19', '\x1A', '\x1B' },
 		{ '\x01', '\x02', '\x03', '\x04', '\x05', '\x06', '\x0B', '\x0C', '\x0F', '\x20' }
 	};
+
+	int minimumCursorX;
+	int currentCursorX;
+	int maximumCursorX;
+
+	int minimumCursorY;
+	int currentCursorY;
+	int maximumCursorY;
+
+	int currentCharacterSetIndex;
 
 	public:
 		Canvas() :
