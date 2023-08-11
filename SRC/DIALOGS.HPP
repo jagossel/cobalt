@@ -15,32 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include <CURSES.H>
 #include "CANVAS.HPP"
-#include "COLORING.HPP"
-#include "STATBAR.HPP"
 
-#ifndef UIHANDLER_H
-#define UIHANDLER_H
+#ifndef DIALOGS_H
+#define DIALOGS_H
 
-class UiHandler {
+#define DIALOG_CENTER_START(pw, tw) ((pw - tw) / 2)
+
+class Dialogs {
 	Canvas* canvas;
-	Coloring* coloring;
-	StatusBar* statusBar;
-	bool exitApplication;
-
 	public:
-		UiHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef) :
-			exitApplication(false)
-		{
+		Dialogs(Canvas* canvasRef) {
 			this->canvas = canvasRef;
-			this->coloring = coloringRef;
-			this->statusBar = statusBarRef;
 		}
-
-		bool getConfirmation(const char* dialogMessage);
-		bool getExitApplication();
-		void toggleExitApplication();
-		void askCharacterSet();
+		WINDOW* createDialog(int windowWith, int windowHeight);
+		void destroyDialog(WINDOW* dialog);
 };
 
 #endif

@@ -18,6 +18,7 @@
 #include <CURSES.H>
 #include "UIHNDLR.HPP"
 #include "KEYDEF.HPP"
+#include "DIALOGS.CPP"
 
 bool UiHandler::getConfirmation(const char* dialogMessage) {
 	int minimumCursorX = this->canvas->getMinimumCursorY();
@@ -58,33 +59,15 @@ void UiHandler::toggleExitApplication() {
 }
 
 void UiHandler::askCharacterSet() {
-	int minimumCursorX = this->canvas->getMinimumCursorX();
-	int maximumCursorX = this->canvas->getMaximumCursorX();
-	int screenWidth = maximumCursorX - minimumCursorX + 1;
-
-	int minimumCursorY = this->canvas->getMinimumCursorY();
-	int maximumCursorY = this->canvas->getMaximumCursorY();
-	int screenHeight = maximumCursorY - minimumCursorY;
-
-	int windowWidth = 27;
-
 	int minimumCharacterSetIndex = this->canvas->getMinimumCharacterSetIndex();
 	int maximumCharacterSetIndex = this->canvas->getMaximumCharacterSetIndex();
 	int characterSetCount = maximumCharacterSetIndex - minimumCharacterSetIndex + 1;
 	int windowHeight = characterSetCount + 2;
 
-	int startX = CENTER_START(screenWidth, windowWidth);
-	int startY = CENTER_START(screenHeight, windowHeight);
-	int endX = startX + windowWidth;
-	int endY = startY + windowHeight;
+	Dialogs dialogs(this->canvas);
+	Dialogs* dialogsRef = &dialogs;
 
-	curs_set(0);
-	WINDOW* dialog = newwin(windowHeight, windowWidth, startY, startX);
-	wbkgdset(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(6, 0)));
-	wborder(dialog, 0xB3, 0xB3, 0xCD, 0xCD, 0xD5, 0xB8, 0xD4, 0xBE);
-	wrefresh(dialog);
-	keypad(dialog, true);
-
+	WINDOW* dialog = dialogsRef->createDialog(27, windowHeight);
 	auto printSelectedCharacterSet = [&] (WINDOW* window, int selectedIndex, bool highlight) {
 		int foregroundColor = highlight ? 0 : 7;
 		int backgroundColor = highlight ? 7 : 0;
@@ -139,10 +122,5 @@ void UiHandler::askCharacterSet() {
 		}
 	}
 
-	wclear(dialog);
-	wrefresh(dialog);
-	touchwin(stdscr);
-	refresh();
-
-	delwin(dialog);
+	dialogsRef->destroyDialog(dialog);
 }
