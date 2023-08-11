@@ -76,8 +76,12 @@ class Canvas {
 		int getMinimumCursorY();
 		int getCurrentCursorY();
 		int getMaximumCursorY();
+		int getMinimumCharacterSetIndex();
 		int getCurrentCharacterSetIndex();
+		void setCurrentCharacterSetIndex(int value);
+		int getMaximumCharacterSetIndex();
 		char getCharacterFromSet(int characterIndex);
+		char getCharacterFromSet(int characterSetIndex, int characterIndex);
 		void drawCharacterFromSet(int characterIndex);
 		void drawTypedCharacter(char typedCharacter);
 		void resetCharacter();

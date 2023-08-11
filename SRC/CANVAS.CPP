@@ -135,12 +135,28 @@ int Canvas::getMaximumCursorY() {
 	return this->maximumCursorY;
 }
 
+int Canvas::getMinimumCharacterSetIndex() {
+	return this->minimumCharacterSetIndex;
+}
+
 int Canvas::getCurrentCharacterSetIndex() {
 	return this->currentCharacterSetIndex;
 }
 
+void Canvas::setCurrentCharacterSetIndex(int value) {
+	this->currentCharacterSetIndex = value;
+}
+
+int Canvas::getMaximumCharacterSetIndex() {
+	return this->maximumCharacterSetIndex;
+}
+
 char Canvas::getCharacterFromSet(int characterIndex) {
 	return this->characterSets[this->currentCharacterSetIndex][characterIndex];
+}
+
+char Canvas::getCharacterFromSet(int characterSetIndex, int characterIndex) {
+	return this->characterSets[characterSetIndex][characterIndex];
 }
 
 void Canvas::drawCharacterFromSet(int characterIndex) {

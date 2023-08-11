@@ -19,17 +19,10 @@
 #include "COLORING.HPP"
 #include "UIHNDLR.HPP"
 #include "FILEIO.HPP"
+#include "KEYDEF.HPP"
 
 #ifndef KEYHANDLER_H
 #define KEYHANDLER_H
-
-// There are some keys that are not working in PDCurses; here, we are going to define our own.
-#define COBALT_KEY_CTL_F     0x06
-#define COBALT_KEY_CTL_N     0x0E
-
-#define COBALT_KEY_BACKSPACE 0x08
-#define COBALT_KEY_ENTER     0x0D
-#define COBALT_KEY_ESCAPE    0x1B
 
 class KeyHandler {
 	Canvas* canvas;

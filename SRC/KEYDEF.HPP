@@ -15,34 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-#include "CANVAS.HPP"
-#include "COLORING.HPP"
-#include "STATBAR.HPP"
+#ifndef KEYDEF_H
+#define KEYDEF_H
 
-#ifndef UIHANDLER_H
-#define UIHANDLER_H
+// There are some keys that are not working in PDCurses; here, we are going to define our own.
+#define COBALT_KEY_SHIFT_F2  KEY_F(14)
+#define COBALT_KEY_CTL_F     0x06
+#define COBALT_KEY_CTL_N     0x0E
 
-#define CENTER_START(pw, tw) ((pw - tw) / 2)
-
-class UiHandler {
-	Canvas* canvas;
-	Coloring* coloring;
-	StatusBar* statusBar;
-	bool exitApplication;
-
-	public:
-		UiHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef) :
-			exitApplication(false)
-		{
-			this->canvas = canvasRef;
-			this->coloring = coloringRef;
-			this->statusBar = statusBarRef;
-		}
-
-		bool getConfirmation(const char* dialogMessage);
-		bool getExitApplication();
-		void toggleExitApplication();
-		void askCharacterSet();
-};
+#define COBALT_KEY_BACKSPACE 0x08
+#define COBALT_KEY_ENTER     0x0D
+#define COBALT_KEY_ESCAPE    0x1B
 
 #endif
