@@ -53,8 +53,14 @@ class Coloring {
 		void applyColoring();
 		void setColors(int foregroundColor, int backgroundColor);
 		void resetColors();
+		int getMinimumForegroundColor();
 		int getCurrentForegroundColor();
+		int getMaximumForegroundColor();
+		int getMinimumBackgroundColor();
 		int getCurrentBackgroundColor();
+		int getMaximumBackgroundColor();
+		void setCurrentForegroundColor(int value);
+		void setCurrentBackgroundColor(int value);
 };
 
 #endif

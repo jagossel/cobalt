@@ -60,6 +60,8 @@ void KeyHandler::handleKeyInput(int keyInput) {
 		this->fileHandler->newDrawing();
 	} else if (COBALT_KEY_SHIFT_F2 == keyInput) {
 		this->uiHandler->askCharacterSet();
+	} else if (COBALT_KEY_SHIFT_F3 == keyInput) {
+		this->uiHandler->askColors();
 	} else if (COBALT_KEY_ESCAPE == keyInput) {
 		if (this->uiHandler->getConfirmation("Exit Cobalt?")) {
 			this->uiHandler->toggleExitApplication();

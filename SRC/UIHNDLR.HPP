@@ -41,6 +41,7 @@ class UiHandler {
 		bool getExitApplication();
 		void toggleExitApplication();
 		void askCharacterSet();
+		void askColors();
 };
 
 #endif

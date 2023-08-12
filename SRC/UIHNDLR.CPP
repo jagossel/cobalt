@@ -122,3 +122,118 @@ void UiHandler::askCharacterSet() {
 
 	Dialogs::destroyDialog(dialog);
 }
+
+void UiHandler::askColors() {
+	int minimumBackgroundColor = this->coloring->getMinimumBackgroundColor();
+	int maximumBackgroundColor = this->coloring->getMaximumBackgroundColor();
+	int colorSwatchWidth = (maximumBackgroundColor - minimumBackgroundColor + 1) * 3;
+	int windowWidth = colorSwatchWidth + 5;
+
+	int minimumForegroundColor = this->coloring->getMinimumForegroundColor();
+	int maximumForegroundColor = this->coloring->getMaximumForegroundColor();
+	int colorSwatchHeight = maximumForegroundColor - minimumForegroundColor + 1;
+	int windowHeight = colorSwatchHeight + 3;
+
+	int selectedForegroundColor = this->coloring->getCurrentForegroundColor();
+	int selectedBackgroundColor = this->coloring->getCurrentBackgroundColor();
+
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, windowWidth, windowHeight);
+	auto drawColorSwatch = [&] ( ) {
+		for (int drawRow = 0; drawRow < colorSwatchHeight; drawRow++) {
+			int y = drawRow + 1;
+			for (int drawCol = 0; drawCol < colorSwatchWidth; drawCol++) {
+				int x = drawCol + 4;
+				wmove(dialog, y, x);
+				wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(selectedForegroundColor, selectedBackgroundColor)));
+				if (selectedForegroundColor > 7) {
+					wattron(dialog, A_BOLD);
+				} else {
+					wattroff(dialog, A_BOLD);
+				}
+
+				if (selectedBackgroundColor > 7) {
+					wattron(dialog, A_BLINK);
+				} else {
+					wattroff(dialog, A_BLINK);
+				}
+
+				wprintw(dialog, "%c", 0xC5);
+			}
+		}
+	};
+
+	auto toggleForegroundColorHighlight = [&] (int selectedIndex, bool highlight) {
+		int itemForegroundColor = highlight ? 0 : 7;
+		int itemBackgroundColor = highlight ? 7 : 0;
+		int y = selectedIndex + 1;
+		wmove(dialog, y, 1);
+		wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(itemForegroundColor, itemBackgroundColor)));
+		wattroff(dialog, A_BLINK);
+		wattroff(dialog, A_BOLD);
+		wprintw(dialog, "% 3d", selectedIndex);
+	};
+
+	auto toggleBackgroundColorHighlight = [&] (int selectedIndex, bool highlight) {
+		int itemForegroundColor = highlight ? 0 : 7;
+		int itemBackgroundColor = highlight ? 7 : 0;
+		int y = windowHeight - 2;
+		int x = (selectedIndex * 3) + 4;
+		wmove(dialog, y, x);
+		wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(itemForegroundColor, itemBackgroundColor)));
+		wattroff(dialog, A_BOLD);
+		wattroff(dialog, A_BLINK);
+		wprintw(dialog, "% 3d", selectedIndex);
+	};
+
+	for (int numberRow = minimumForegroundColor; numberRow <= maximumForegroundColor; numberRow++) {
+		toggleForegroundColorHighlight(numberRow, numberRow == selectedForegroundColor);
+	}
+
+	for (int numberCol = minimumBackgroundColor; numberCol <= maximumBackgroundColor; numberCol++) {
+		toggleBackgroundColorHighlight(numberCol, numberCol == selectedBackgroundColor);
+	}
+
+	drawColorSwatch();
+
+	bool exitDialog = false;
+	while (!exitDialog) {
+		int keyInput = wgetch(dialog);
+		if (KEY_UP == keyInput) {
+			if (selectedForegroundColor > minimumForegroundColor) {
+				toggleForegroundColorHighlight(selectedForegroundColor, false);
+				selectedForegroundColor--;
+				toggleForegroundColorHighlight(selectedForegroundColor, true);
+				drawColorSwatch();
+			}
+		} else if (KEY_DOWN == keyInput) {
+			if (selectedForegroundColor < maximumForegroundColor) {
+				toggleForegroundColorHighlight(selectedForegroundColor, false);
+				selectedForegroundColor++;
+				toggleForegroundColorHighlight(selectedForegroundColor, true);
+				drawColorSwatch();
+			}
+		} else if (KEY_LEFT == keyInput) {
+			if (selectedBackgroundColor > minimumBackgroundColor) {
+				toggleBackgroundColorHighlight(selectedBackgroundColor, false);
+				selectedBackgroundColor--;
+				toggleBackgroundColorHighlight(selectedBackgroundColor, true);
+				drawColorSwatch();
+			}
+		} else if (KEY_RIGHT == keyInput) {
+			if (selectedBackgroundColor < maximumBackgroundColor) {
+				toggleBackgroundColorHighlight(selectedBackgroundColor, false);
+				selectedBackgroundColor++;
+				toggleBackgroundColorHighlight(selectedBackgroundColor, true);
+				drawColorSwatch();
+			}
+		} else if (COBALT_KEY_ENTER == keyInput) {
+			this->coloring->setCurrentForegroundColor(selectedForegroundColor);
+			this->coloring->setCurrentBackgroundColor(selectedBackgroundColor);
+			exitDialog = true;
+		} else if (COBALT_KEY_ESCAPE == keyInput) {
+			exitDialog = true;
+		}
+	}
+
+	Dialogs::destroyDialog(dialog);
+}

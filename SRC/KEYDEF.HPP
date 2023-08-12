@@ -20,6 +20,7 @@
 
 // There are some keys that are not working in PDCurses; here, we are going to define our own.
 #define COBALT_KEY_SHIFT_F2  KEY_F(14)
+#define COBALT_KEY_SHIFT_F3  KEY_F(15)
 #define COBALT_KEY_CTL_F     0x06
 #define COBALT_KEY_CTL_N     0x0E
 

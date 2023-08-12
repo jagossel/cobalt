@@ -97,10 +97,34 @@ void Coloring::resetColors() {
 	attroff(A_BLINK);
 }
 
+int Coloring::getMinimumForegroundColor() {
+	return this->minimumForegroundColor;
+}
+
 int Coloring::getCurrentForegroundColor() {
 	return this->currentForegroundColor;
 }
 
+int Coloring::getMaximumForegroundColor() {
+	return this->maximumForegroundColor;
+}
+
+int Coloring::getMinimumBackgroundColor() {
+	return this->minimumBackgroundColor;
+}
+
 int Coloring::getCurrentBackgroundColor() {
 	return this->currentBackgroundColor;
+}
+
+int Coloring:: getMaximumBackgroundColor() {
+	return this->maximumBackgroundColor;
+}
+
+void Coloring::setCurrentForegroundColor(int value) {
+	this->currentForegroundColor = value;
+}
+
+void Coloring::setCurrentBackgroundColor(int value) {
+	this->currentBackgroundColor = value;
 }
