@@ -18,13 +18,13 @@
 #include <CURSES.H>
 #include "DIALOGS.HPP"
 
-WINDOW* Dialogs::createDialog(int windowWidth, int windowHeight) {
-	int minimumCursorX = this->canvas->getMinimumCursorX();
-	int maximumCursorX = this->canvas->getMaximumCursorX();
+WINDOW* Dialogs::createDialog(Canvas* canvas, int windowWidth, int windowHeight) {
+	int minimumCursorX = canvas->getMinimumCursorX();
+	int maximumCursorX = canvas->getMaximumCursorX();
 	int screenWidth = maximumCursorX - minimumCursorX + 1;
 
-	int minimumCursorY = this->canvas->getMinimumCursorY();
-	int maximumCursorY = this->canvas->getMaximumCursorY();
+	int minimumCursorY = canvas->getMinimumCursorY();
+	int maximumCursorY = canvas->getMaximumCursorY();
 	int screenHeight = maximumCursorY - minimumCursorY;
 
 	int startX = DIALOG_CENTER_START(screenWidth, windowWidth);

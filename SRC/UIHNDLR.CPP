@@ -64,10 +64,7 @@ void UiHandler::askCharacterSet() {
 	int characterSetCount = maximumCharacterSetIndex - minimumCharacterSetIndex + 1;
 	int windowHeight = characterSetCount + 2;
 
-	Dialogs dialogs(this->canvas);
-	Dialogs* dialogsRef = &dialogs;
-
-	WINDOW* dialog = dialogsRef->createDialog(27, windowHeight);
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, 27, windowHeight);
 	auto printSelectedCharacterSet = [&] (WINDOW* window, int selectedIndex, bool highlight) {
 		int foregroundColor = highlight ? 0 : 7;
 		int backgroundColor = highlight ? 7 : 0;
@@ -122,5 +119,5 @@ void UiHandler::askCharacterSet() {
 		}
 	}
 
-	dialogsRef->destroyDialog(dialog);
+	Dialogs::destroyDialog(dialog);
 }

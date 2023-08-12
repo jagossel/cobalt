@@ -24,13 +24,11 @@
 #define DIALOG_CENTER_START(pw, tw) ((pw - tw) / 2)
 
 class Dialogs {
-	Canvas* canvas;
 	public:
-		Dialogs(Canvas* canvasRef) {
-			this->canvas = canvasRef;
-		}
-		WINDOW* createDialog(int windowWith, int windowHeight);
-		void destroyDialog(WINDOW* dialog);
+		static WINDOW* createDialog(Canvas* canvas, int windowWith, int windowHeight);
+		static void destroyDialog(WINDOW* dialog);
+	private:
+		Dialogs();
 };
 
 #endif
