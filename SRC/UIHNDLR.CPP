@@ -22,24 +22,20 @@
 #include "MACROS.HPP"
 
 bool UiHandler::getConfirmation(const char* dialogMessage) {
-	int minimumCursorX = this->canvas->getMinimumCursorY();
-	int minimumCursorY = this->canvas->getMinimumCursorY();
-	int maximumCursorY = this->canvas->getMaximumCursorY();
+	int dialogY = this->statusBar->getAtTop() ?
+		this->canvas->getMinimumCursorY() :
+		this->canvas->getMaximumCursorY();
 
-	int dialogY = this->statusBar->getAtTop() ? minimumCursorY : maximumCursorY;
-
-	move(dialogY, minimumCursorX);
-	this->coloring->setColors(7, 0);
-	printw("% 80c", ' ');
-
-	move(dialogY, minimumCursorX);
-	this->coloring->setColors(9, 0);
-	printw("%s (Y/N) ", dialogMessage);
+	WINDOW* dialog = newwin(1, 80, dialogY, 0);
+	wbkgdset(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(9, 0)));
+	wattron(dialog, A_BOLD);
+	wprintw(dialog, "%s (Y/N) ", dialogMessage);
+	wrefresh(dialog);
 
 	bool confirmationResult = false;
 	bool exitDialog = false;
 	while (!exitDialog) {
-		int dialogKeyInput = getch();
+		int dialogKeyInput = wgetch(dialog);
 		if ('Y' == dialogKeyInput || 'y' == dialogKeyInput) {
 			confirmationResult = true;
 			exitDialog = true;
@@ -47,6 +43,12 @@ bool UiHandler::getConfirmation(const char* dialogMessage) {
 			exitDialog = true;
 		}
 	}
+
+	wclear(dialog);
+	wrefresh(dialog);
+	touchwin(stdscr);
+	refresh();
+	delwin(dialog);
 
 	return confirmationResult;
 }
