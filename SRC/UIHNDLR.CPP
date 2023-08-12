@@ -19,6 +19,7 @@
 #include "UIHNDLR.HPP"
 #include "KEYDEF.HPP"
 #include "DIALOGS.CPP"
+#include "MACROS.HPP"
 
 bool UiHandler::getConfirmation(const char* dialogMessage) {
 	int minimumCursorX = this->canvas->getMinimumCursorY();

@@ -19,8 +19,6 @@
 #ifndef COLORING_H
 #define COLORING_H
 
-#define COLOR_PAIR_INDEX(fgc, bgc) ((bgc * 16) + fgc)
-
 class Coloring {
 	const int minimumForegroundColor = 0;
 	const int maximumForegroundColor = 15;

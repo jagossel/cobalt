@@ -17,6 +17,7 @@
  ***/
 #include <CURSES.H>
 #include "DIALOGS.HPP"
+#include "MACROS.HPP"
 
 WINDOW* Dialogs::createDialog(Canvas* canvas, int windowWidth, int windowHeight) {
 	int minimumCursorX = canvas->getMinimumCursorX();

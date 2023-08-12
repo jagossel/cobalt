@@ -17,6 +17,7 @@
  ***/
 #include <CURSES.H>
 #include "COLORING.HPP"
+#include "MACROS.HPP"
 
 void Coloring::initColors() {
 	for (int bg = this->minimumBackgroundColor; bg <= this->maximumBackgroundColor; bg++) {
