@@ -1,6 +1,6 @@
 cobalt: main.o 
-	gcc ..\OBJ\MAIN.O -o ..\BIN\COBALT.EXE -lpdcurses -LC:\DJGPP\LIB
+	gxx ..\OBJ\MAIN.O -o ..\BIN\COBALT.EXE -lpdcurses -LC:\DJGPP\LIB
 
 main.o: main.cpp
-	gcc -g MAIN.CPP -c -o ..\OBJ\MAIN.O -IC:\DJGPP\INCLUDE
+	gxx -g MAIN.CPP -c -o ..\OBJ\MAIN.O -IC:\DJGPP\INCLUDE
 

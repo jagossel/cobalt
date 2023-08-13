@@ -15,13 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include <string>
 #include <CURSES.H>
 #include "UIHNDLR.HPP"
 #include "KEYDEF.HPP"
 #include "DIALOGS.CPP"
 #include "MACROS.HPP"
 
-bool UiHandler::getConfirmation(const char* dialogMessage) {
+bool UiHandler::getConfirmation(std::string dialogMessage) {
 	int dialogY = this->statusBar->getAtTop() ?
 		this->canvas->getMinimumCursorY() :
 		this->canvas->getMaximumCursorY();
@@ -29,7 +30,7 @@ bool UiHandler::getConfirmation(const char* dialogMessage) {
 	WINDOW* dialog = newwin(1, 80, dialogY, 0);
 	wbkgdset(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(9, 0)));
 	wattron(dialog, A_BOLD);
-	wprintw(dialog, "%s (Y/N) ", dialogMessage);
+	wprintw(dialog, "%s (Y/N) ", dialogMessage.c_str());
 	wrefresh(dialog);
 
 	bool confirmationResult = false;

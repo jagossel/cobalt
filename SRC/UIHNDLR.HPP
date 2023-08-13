@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include <string>
 #include "CANVAS.HPP"
 #include "COLORING.HPP"
 #include "STATBAR.HPP"
@@ -37,7 +38,7 @@ class UiHandler {
 			this->statusBar = statusBarRef;
 		}
 
-		bool getConfirmation(const char* dialogMessage);
+		bool getConfirmation(std::string dialogMessage);
 		bool getExitApplication();
 		void toggleExitApplication();
 		void askCharacterSet();
