@@ -23,15 +23,15 @@
 #include "MACROS.HPP"
 
 bool UiHandler::getConfirmation(std::string dialogMessage) {
-	int dialogY = this->statusBar->getAtTop() ?
-		this->canvas->getMinimumCursorY() :
-		this->canvas->getMaximumCursorY();
+	std::string fullDialogMessage = std::string(dialogMessage) + " (Y/N)";
+	int dialogMessageLenhth = fullDialogMessage.length();
+	int windowWidth = dialogMessageLenhth + 4;
 
-	WINDOW* dialog = newwin(1, 80, dialogY, 0);
-	wbkgdset(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(9, 0)));
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, windowWidth, 3);
+	wmove(dialog, 1, 2);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(9, 0)));
 	wattron(dialog, A_BOLD);
-	wprintw(dialog, "%s (Y/N) ", dialogMessage.c_str());
-	wrefresh(dialog);
+	wprintw(dialog, fullDialogMessage.c_str());
 
 	bool confirmationResult = false;
 	bool exitDialog = false;
@@ -45,11 +45,7 @@ bool UiHandler::getConfirmation(std::string dialogMessage) {
 		}
 	}
 
-	wclear(dialog);
-	wrefresh(dialog);
-	touchwin(stdscr);
-	refresh();
-	delwin(dialog);
+	Dialogs::destroyDialog(dialog);
 
 	return confirmationResult;
 }
