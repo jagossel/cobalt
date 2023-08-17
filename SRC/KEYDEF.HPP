@@ -23,6 +23,7 @@
 #define COBALT_KEY_SHIFT_F3  KEY_F(15)
 #define COBALT_KEY_CTL_F     0x06
 #define COBALT_KEY_CTL_N     0x0E
+#define COBALT_KEY_CTL_S     0x13
 
 #define COBALT_KEY_BACKSPACE 0x08
 #define COBALT_KEY_ENTER     0x0D

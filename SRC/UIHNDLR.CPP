@@ -22,6 +22,65 @@
 #include "DIALOGS.CPP"
 #include "MACROS.HPP"
 
+std::string UiHandler::getFileName(std::string fileOperation) {
+	std::string dialogMessage = "Name w/o Extension: ";
+	int dialogMessageLength = dialogMessage.length();
+	int fullDialogMessageLength = dialogMessageLength + 8;
+	int windowWidth = fullDialogMessageLength + 4;
+
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, windowWidth, 3);
+	wmove(dialog, 1, 2);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(7, 0)));
+	wattroff(dialog, A_BOLD);
+	wprintw(dialog, dialogMessage.c_str());
+
+	std::string fileName = "";
+
+	auto isFileNameCharacter = [&] (int keyInput) {
+		return
+			fileName.length() < 8
+			&& (
+				   (keyInput >= 0x30 && keyInput <= 0x39) // 0-9
+				|| (keyInput >= 0x41 && keyInput <= 0x5A) // A-Z
+				|| (keyInput >= 0x61 && keyInput <= 0x7A) // a-z
+				|| keyInput == 0x5F // _
+			);
+	};
+
+	auto displayFileName = [&] () {
+		wmove(dialog, 1, dialogMessageLength + 2);
+		wprintw(dialog, "% 8c", ' ');
+		wmove(dialog, 1, dialogMessageLength + 2);
+		wprintw(dialog, fileName.c_str());
+	};
+
+	bool exitDialog = false;
+	while (!exitDialog) {
+		curs_set(1);
+		int dialogKeyInput = wgetch(dialog);
+		if (isFileNameCharacter(dialogKeyInput)) {
+			fileName += (char)(toupper(dialogKeyInput));
+			displayFileName();
+		} else if (COBALT_KEY_BACKSPACE == dialogKeyInput) {
+			int fileNameLength = fileName.length();
+			if (fileNameLength > 0) {
+				int newFileNameLength = fileNameLength - 1;
+				fileName = fileName.substr(0, newFileNameLength);
+				displayFileName();
+			}
+		} else if (COBALT_KEY_ENTER == dialogKeyInput) {
+			exitDialog = true;
+		} else if (COBALT_KEY_ESCAPE == dialogKeyInput) {
+			exitDialog = true;
+			fileName = "";
+		}
+	}
+
+	Dialogs::destroyDialog(dialog);
+
+	return fileName;
+}
+
 bool UiHandler::getConfirmation(std::string dialogMessage) {
 	std::string fullDialogMessage = std::string(dialogMessage) + " (Y/N)";
 	int dialogMessageLenhth = fullDialogMessage.length();

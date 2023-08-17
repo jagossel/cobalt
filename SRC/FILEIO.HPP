@@ -39,6 +39,7 @@ class FileHandler {
 		}
 
 		void newDrawing();
+		void saveDrawing();
 };
 
 #endif

@@ -15,10 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include <vector>
 #include "DRAWCHAR.HPP"
 #include "COLORING.HPP"
+
 #ifndef CANVAS_H
 #define CANVAS_H
+
+#define CANVAS_INDEX(y, x) ((y * 80) + x)
 
 class Canvas {
 	const int minimumCharacterSetIndex = 0;
@@ -47,7 +51,7 @@ class Canvas {
 
 	int currentCharacterSetIndex;
 
-	DrawingCharacter drawingCanvas[25][80];
+	std::vector<DrawingCharacter> drawingCanvas;
 	Coloring* coloring;
 
 	public:
@@ -89,6 +93,7 @@ class Canvas {
 		void redrawAll();
 		void redrawRegion(int startX, int startY, int endX, int endY);
 		void initializeDrawing();
+		std::vector<DrawingCharacter>* getDrawing();
 };
 
 #endif

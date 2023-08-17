@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include <vector>
 #include <CURSES.H>
 #include "DRAWCHAR.HPP"
 #include "CANVAS.HPP"
@@ -167,9 +168,10 @@ void Canvas::drawTypedCharacter(char typedCharacter) {
 	int currentForegroundColor = this->coloring->getCurrentForegroundColor();
 	int currentBackgroundColor = this->coloring->getCurrentBackgroundColor();
 
-	this->drawingCanvas[this->currentCursorY][this->currentCursorX].character = typedCharacter;
-	this->drawingCanvas[this->currentCursorY][this->currentCursorX].foregroundColor = currentForegroundColor;
-	this->drawingCanvas[this->currentCursorY][this->currentCursorX].backgroundColor = currentBackgroundColor;
+	int canvasIndex = CANVAS_INDEX(this->currentCursorY, this->currentCursorX);
+	this->drawingCanvas[canvasIndex].character = typedCharacter;
+	this->drawingCanvas[canvasIndex].foregroundColor = currentForegroundColor;
+	this->drawingCanvas[canvasIndex].backgroundColor = currentBackgroundColor;
 
 	this->coloring->applyColoring();
 	printw("%c", typedCharacter);
@@ -178,11 +180,10 @@ void Canvas::drawTypedCharacter(char typedCharacter) {
 }
 
 void Canvas::resetCharacter() {
-	int currentCursorX = this->currentCursorX;
-	int currentCursorY = this->currentCursorY;
-	this->drawingCanvas[currentCursorY][currentCursorX].character = ' ';
-	this->drawingCanvas[currentCursorY][currentCursorX].foregroundColor = 7;
-	this->drawingCanvas[currentCursorY][currentCursorX].backgroundColor = 0;
+	int canvasIndex = CANVAS_INDEX(this->currentCursorY, this->currentCursorX);
+	this->drawingCanvas[canvasIndex].character = ' ';
+	this->drawingCanvas[canvasIndex].foregroundColor = 7;
+	this->drawingCanvas[canvasIndex].backgroundColor = 0;
 
 	this->coloring->setColors(7, 0);
 	printw("%c", ' ');
@@ -205,12 +206,14 @@ void Canvas::redrawRegion(int startX, int startY, int endX, int endY) {
 		for (int redrawX = startX; redrawX <= endX; redrawX++) {
 			int yIndex = redrawY - this->minimumCursorY;
 			int xIndex = redrawX - this->minimumCursorX;
-			int foregroundColor = this->drawingCanvas[yIndex][xIndex].foregroundColor;
-			int backgroundColor = this->drawingCanvas[yIndex][xIndex].backgroundColor;
+
+			int canvasIndex = CANVAS_INDEX(yIndex, xIndex);
+			int foregroundColor = this->drawingCanvas[canvasIndex].foregroundColor;
+			int backgroundColor = this->drawingCanvas[canvasIndex].backgroundColor;
 
 			move(redrawY, redrawX);
 			this->coloring->setColors(foregroundColor, backgroundColor);
-			printw("%c", drawingCanvas[yIndex][xIndex].character);
+			printw("%c", drawingCanvas[canvasIndex].character);
 		}
 	}
 
@@ -220,13 +223,21 @@ void Canvas::redrawRegion(int startX, int startY, int endX, int endY) {
 }
 
 void Canvas::initializeDrawing() {
+	this->drawingCanvas.clear();
 	for (int initY = this->minimumCursorY; initY <= this->maximumCursorY; initY++) {
 		for (int initX = this->minimumCursorX; initX <= this->maximumCursorX; initX++) {
-			this->drawingCanvas[initY][initX].character = ' ';
-			this->drawingCanvas[initY][initX].foregroundColor = 7;
-			this->drawingCanvas[initY][initX].backgroundColor = 0;
+			DrawingCharacter characterData;
+			characterData.character = ' ';
+			characterData.foregroundColor = 7;
+			characterData.backgroundColor = 0;
+
+			this->drawingCanvas.push_back(characterData);
 		}
 	}
 
 	this->redrawAll();
+}
+
+std::vector<DrawingCharacter>* Canvas::getDrawing() {
+	return &this->drawingCanvas;
 }

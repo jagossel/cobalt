@@ -38,6 +38,7 @@ class UiHandler {
 			this->statusBar = statusBarRef;
 		}
 
+		std::string getFileName(std::string fileOperation);
 		bool getConfirmation(std::string dialogMessage);
 		bool getExitApplication();
 		void toggleExitApplication();
