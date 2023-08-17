@@ -17,8 +17,7 @@
  ***/
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
+#include <cstdio>
 #include <CURSES.H>
 #include "DRAWCHAR.HPP"
 #include "FILEIO.HPP"
@@ -40,8 +39,7 @@ void FileHandler::saveDrawing() {
 	std::vector<DrawingCharacter>* drawing = this->canvas->getDrawing();
 	int drawingSize = drawing->size();
 
-	std::ofstream fileWriter;
-	fileWriter.open(fileName);
+	FILE* fileHandle = fopen(fileName.c_str(), "wb");
 	for (int i = 0; i < drawingSize; i++) {
 		// For backwards compabitlity with the original BASIC version, convert all
 		// of this data into an unsigned char (should be a BYTE in FreeBASIC).
@@ -50,10 +48,10 @@ void FileHandler::saveDrawing() {
 		unsigned char foregroundColor = drawingCharacter.foregroundColor;
 		unsigned char backgroundColor = drawingCharacter.backgroundColor;
 
-		fileWriter<<character;
-		fileWriter<<foregroundColor;
-		fileWriter<<backgroundColor;
+		fputc(character, fileHandle);
+		fputc(foregroundColor, fileHandle);
+		fputc(backgroundColor, fileHandle);
 	}
 
-	fileWriter.close();
+	fclose(fileHandle);
 }
