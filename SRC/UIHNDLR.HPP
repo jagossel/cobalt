@@ -23,6 +23,8 @@
 #ifndef UIHANDLER_H
 #define UIHANDLER_H
 
+#define PAUSE_TEXT "Press Any Key"
+
 class UiHandler {
 	Canvas* canvas;
 	Coloring* coloring;
@@ -44,6 +46,8 @@ class UiHandler {
 		void toggleExitApplication();
 		void askCharacterSet();
 		void askColors();
+		void showErrorMessage(std::string errorMessage);
+		void showMessage(std::string message);
 };
 
 #endif

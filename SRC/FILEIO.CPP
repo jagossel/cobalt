@@ -39,19 +39,42 @@ void FileHandler::saveDrawing() {
 	std::vector<DrawingCharacter>* drawing = this->canvas->getDrawing();
 	int drawingSize = drawing->size();
 
-	FILE* fileHandle = fopen(fileName.c_str(), "wb");
-	for (int i = 0; i < drawingSize; i++) {
-		// For backwards compabitlity with the original BASIC version, convert all
-		// of this data into an unsigned char (should be a BYTE in FreeBASIC).
-		DrawingCharacter drawingCharacter = drawing->at(i);
-		unsigned char character = drawingCharacter.character;
-		unsigned char foregroundColor = drawingCharacter.foregroundColor;
-		unsigned char backgroundColor = drawingCharacter.backgroundColor;
+	bool fileExists = this->drawingExists(fileName);
 
-		fputc(character, fileHandle);
-		fputc(foregroundColor, fileHandle);
-		fputc(backgroundColor, fileHandle);
+	std::string confirmOverwriteMessage = "File, " + fileName + ", exists.  Overwrite?";
+	bool confirmOverwrite = !fileExists || this->uiHandler->getConfirmation(confirmOverwriteMessage);
+	if (confirmOverwrite) {
+		FILE* fileHandle = fopen(fileName.c_str(), "wb");
+		if (NULL != fileHandle) {
+			for (int i = 0; i < drawingSize; i++) {
+				// For backwards compabitlity with the original BASIC version, convert all
+				// of this data into an unsigned char (should be a BYTE in FreeBASIC).
+				DrawingCharacter drawingCharacter = drawing->at(i);
+				unsigned char character = drawingCharacter.character;
+				unsigned char foregroundColor = drawingCharacter.foregroundColor;
+				unsigned char backgroundColor = drawingCharacter.backgroundColor;
+
+				fputc(character, fileHandle);
+				fputc(foregroundColor, fileHandle);
+				fputc(backgroundColor, fileHandle);
+			}
+
+			fclose(fileHandle);
+
+			std::string message = "Drawing saved: " + fileName;
+			this->uiHandler->showMessage(message);
+		} else {
+			this->uiHandler->showErrorMessage("Cannot save drawing.");
+		}
+	}
+}
+
+bool FileHandler::drawingExists(std::string fileName) {
+	bool fileExists = false;
+	if (FILE* fileHandle = fopen(fileName.c_str(), "r")) {
+		fileExists = true;
+		fclose(fileHandle);
 	}
 
-	fclose(fileHandle);
+	return fileExists;
 }

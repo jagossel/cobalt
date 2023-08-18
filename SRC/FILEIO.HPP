@@ -40,6 +40,7 @@ class FileHandler {
 
 		void newDrawing();
 		void saveDrawing();
+		bool drawingExists(std::string fileName);
 };
 
 #endif

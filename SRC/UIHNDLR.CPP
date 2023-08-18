@@ -295,3 +295,56 @@ void UiHandler::askColors() {
 
 	Dialogs::destroyDialog(dialog);
 }
+
+void UiHandler::showErrorMessage(std::string errorMessage) {
+	int errorMessageLength = errorMessage.length();
+	int dialogWidth = errorMessageLength + 6;
+
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, dialogWidth, 5);
+
+	wmove(dialog, 1, 2);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(9, 0)));
+	wattron(dialog, A_BOLD);
+	wprintw(dialog, "!");
+
+	wmove(dialog, 1, 4);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(15, 0)));
+	wattron(dialog, A_BOLD);
+	wprintw(dialog, errorMessage.c_str());
+
+	std::string pauseText = PAUSE_TEXT;
+	int pauseTextLength = pauseText.length();
+	int pauseTextX = DIALOG_CENTER_START(dialogWidth, pauseTextLength);
+	wmove(dialog, 3, pauseTextX);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(7, 0)));
+	wattroff(dialog, A_BOLD);
+	wprintw(dialog, pauseText.c_str());
+
+	wgetch(dialog);
+
+	Dialogs::destroyDialog(dialog);
+}
+
+void UiHandler::showMessage(std::string message) {
+	int messageLength = message.length();
+	int dialogWidth = messageLength + 4;
+
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, dialogWidth, 5);
+
+	wmove(dialog, 1, 2);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(15, 0)));
+	wattron(dialog, A_BOLD);
+	wprintw(dialog, message.c_str());
+
+	std::string pauseText = PAUSE_TEXT;
+	int pauseTextLength = pauseText.length();
+	int pauseTextX = DIALOG_CENTER_START(dialogWidth, pauseTextLength);
+	wmove(dialog, 3, pauseTextX);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(7, 0)));
+	wattroff(dialog, A_BOLD);
+	wprintw(dialog, pauseText.c_str());
+
+	wgetch(dialog);
+
+	Dialogs::destroyDialog(dialog);
+}
