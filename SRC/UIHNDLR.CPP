@@ -22,7 +22,7 @@
 #include "DIALOGS.CPP"
 #include "MACROS.HPP"
 
-std::string UiHandler::getFileName(std::string fileOperation) {
+std::string UiHandler::getFileName() {
 	std::string dialogMessage = "Name w/o Extension: ";
 	int dialogMessageLength = dialogMessage.length();
 	int fullDialogMessageLength = dialogMessageLength + 8;

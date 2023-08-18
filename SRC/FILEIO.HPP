@@ -23,7 +23,8 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
-#define FILE_HEADER "COBALTV2"
+#define FILE_HEADER          "COBALTV2"
+#define INVALID_FILE_MESSAGE "Invalid file format."
 
 class FileHandler {
 	Canvas* canvas;
@@ -42,6 +43,7 @@ class FileHandler {
 
 		void newDrawing();
 		void saveDrawing();
+		void loadDrawing();
 		bool drawingExists(std::string fileName);
 };
 

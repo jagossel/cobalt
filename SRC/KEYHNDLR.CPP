@@ -58,6 +58,8 @@ void KeyHandler::handleKeyInput(int keyInput) {
 		this->canvas->showFullDrawing();
 	} else if (COBALT_KEY_CTL_N == keyInput) {
 		this->fileHandler->newDrawing();
+	} else if (COBALT_KEY_CTL_O == keyInput) {
+		this->fileHandler->loadDrawing();
 	} else if (COBALT_KEY_CTL_S == keyInput) {
 		this->fileHandler->saveDrawing();
 	} else if (COBALT_KEY_SHIFT_F2 == keyInput) {

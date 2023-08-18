@@ -241,3 +241,10 @@ void Canvas::initializeDrawing() {
 std::vector<DrawingCharacter>* Canvas::getDrawing() {
 	return &this->drawingCanvas;
 }
+
+void Canvas::loadDrawing(std::vector<DrawingCharacter> data) {
+	this->drawingCanvas = data;
+	this->reset();
+	this->coloring->reset();
+	this->redrawAll();
+}

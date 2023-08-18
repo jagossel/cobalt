@@ -94,6 +94,7 @@ class Canvas {
 		void redrawRegion(int startX, int startY, int endX, int endY);
 		void initializeDrawing();
 		std::vector<DrawingCharacter>* getDrawing();
+		void loadDrawing(std::vector<DrawingCharacter> data);
 };
 
 #endif
