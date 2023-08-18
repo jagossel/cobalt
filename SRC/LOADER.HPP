@@ -15,35 +15,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-#include "CANVAS.HPP"
-#include "COLORING.HPP"
-#include "STATBAR.HPP"
-#include "UIHNDLR.HPP"
+#include <vector>
+#include "DRAWCHAR.HPP"
 
-#ifndef FILEIO_H
-#define FILEIO_H
+#ifndef LOADER_H
+#define LOADER_H
 
-#define FILE_HEADER "COBALTV2"
-
-class FileHandler {
-	Canvas* canvas;
-	Coloring* coloring;
-	StatusBar* statusBar;
-	UiHandler* uiHandler;
-
+class DrawingLoader {
+	protected:
+		std::vector<char>* buffer;
+		int minimumCursorY;
+		int maximumCursorY;
+		int minimumCursorX;
+		int maximumCursorX;
 	public:
-		FileHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef, UiHandler* uiHandlerRef)
-		{
-			this->canvas = canvasRef;
-			this->coloring = coloringRef;
-			this->statusBar = statusBarRef;
-			this->uiHandler = uiHandlerRef;
+		DrawingLoader(std::vector<char>* bufferRef, int minCurY, int maxCurY, int minCurX, int maxCurX) {
+			this->buffer = bufferRef;
+			this->minimumCursorY = minCurY;
+			this->maximumCursorY = maxCurY;
+			this->minimumCursorX = minCurX;
+			this->maximumCursorX = maxCurX;
 		}
-
-		void newDrawing();
-		void saveDrawing();
-		void loadDrawing();
-		bool drawingExists(std::string fileName);
+		virtual std::vector<DrawingCharacter> loadDrawing() = 0;
 };
 
 #endif

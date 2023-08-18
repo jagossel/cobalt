@@ -21,6 +21,9 @@
 #include <CURSES.H>
 #include "DRAWCHAR.HPP"
 #include "FILEIO.HPP"
+#include "V1LDR.CPP"
+#include "V2LDR.CPP"
+#include "MACROS.HPP"
 
 void FileHandler::newDrawing() {
 	if (!this->uiHandler->getConfirmation("Start a new Drawing?")) return;
@@ -101,87 +104,49 @@ void FileHandler::loadDrawing() {
 	fclose(fileHandle);
 	fileBuffer.pop_back();
 
-	// File Layout:
-	//     8 bytes: File Header = COBALTV2
-	//     1 byte : Minimum Cursor Y
-	//     1 byte : Maximum Cursor Y
-	//     1 byte : Minimum Cursor X
-	//     1 byte : Maximum Cursor X
-	// 6,000 bytes: 80 (Width) * 25 (Height) * <Drawing Data> (3 bytes)
-	//
-	// Drawing Data Layout:
-	// 1 byte: Character Code
-	// 1 byte: Foreground Color Code
-	// 1 byte: Background Color Code
-	//
-	// Total:
-	// 8 + 1 + 1 + 1 + 1 + (80 * 25 * 3) =
-	// 12 + 6000 = 6012
-	//
+	int minimumCursorY = this->canvas->getMinimumCursorY();
+	int maximumCursorY = this->canvas->getMaximumCursorY();
+	int minimumCursorX = this->canvas->getMinimumCursorX();
+	int maximumCurosrX = this->canvas->getMaximumCursorX();
+
 	// Check 3: Is it the expected file size?
-	int exepctedFileSize = 6012;
+	// Given how inflexible Cobalt is when it comes to dimensions, both
+	// versions have fixed file sizes.  It is possible to get away with
+	// using their file sizes as a way to check.
+	int version1ExpectedFileSize = 6000;
+	int version2ExpectedFileSize = 6012;
 	int actualFileSize = fileBuffer.size();
-	if (actualFileSize != exepctedFileSize) {
-		this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
-		return;
-	}
+	if (actualFileSize == version1ExpectedFileSize) {
+		try {
+			DrawingLoaderVersion1 loader(
+				&fileBuffer,
+				minimumCursorY,
+				maximumCursorY,
+				minimumCursorX,
+				maximumCurosrX);
 
-	int fileIndex = 0;
-
-	// Check 4: Does it have the valid file header?
-	std::string expectedFileHeader = FILE_HEADER;
-	std::string actualFileHeader = "";
-	int headerLength = expectedFileHeader.length();
-	for (int i = 0; i < headerLength; i++) {
-		fileIndex++;
-		actualFileHeader += fileBuffer.at(i);
-	}
-
-	if (actualFileHeader != expectedFileHeader) {
-		this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
-		return;
-	}
-
-	// Check 5: Are the dimensions matching?
-	int minimumCursorY = fileBuffer.at(fileIndex++);
-	int maximumCursorY = fileBuffer.at(fileIndex++);
-	int minimumCursorX = fileBuffer.at(fileIndex++);
-	int maximumCursorX = fileBuffer.at(fileIndex++);
-	bool validDimensions =
-		minimumCursorY == this->canvas->getMinimumCursorY()
-		&& maximumCursorY == this->canvas->getMaximumCursorY()
-		&& minimumCursorX == this->canvas->getMinimumCursorX()
-		&& maximumCursorX == this->canvas->getMaximumCursorX();
-
-	if (!validDimensions) {
-		this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
-		return;
-	}
-
-	std::vector<DrawingCharacter> drawing;
-	while (fileIndex < exepctedFileSize) {
-		char characterCode = fileBuffer.at(fileIndex++);
-		char foregroundColor = fileBuffer.at(fileIndex++);
-		if (foregroundColor > 15) {
-			this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
-			break;
+			this->canvas->loadDrawing(loader.loadDrawing());
+		} catch (const std::exception& ex) {
+			this->uiHandler->showErrorMessage(ex.what());
 		}
+	} else if (actualFileSize == version2ExpectedFileSize) {
+		try {
+			DrawingLoaderVersion2 loader(
+				&fileBuffer,
+				minimumCursorY,
+				maximumCursorY,
+				minimumCursorX,
+				maximumCurosrX
+			);
 
-		char backgroundColor = fileBuffer.at(fileIndex++);
-		if (backgroundColor > 15) {
-			this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
-			break;
+			this->canvas->loadDrawing(loader.loadDrawing());
+		} catch (const std::exception& ex) {
+			this->uiHandler->showErrorMessage(ex.what());
 		}
-
-		DrawingCharacter drawingCharacter;
-		drawingCharacter.character = characterCode;
-		drawingCharacter.foregroundColor = foregroundColor;
-		drawingCharacter.backgroundColor = backgroundColor;
-
-		drawing.push_back(drawingCharacter);
+	} else {
+		this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
+		return;
 	}
-
-	this->canvas->loadDrawing(drawing);
 }
 
 bool FileHandler::drawingExists(std::string fileName) {

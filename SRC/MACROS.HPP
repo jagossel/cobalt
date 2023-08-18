@@ -18,6 +18,11 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+// Common Strings
+#define INVALID_FILE_MESSAGE "Invalid file format."
+
+// Common Calculations
 #define COLOR_PAIR_INDEX(fgc, bgc) ((bgc * 16) + fgc)
+#define CANVAS_INDEX(y, x, maxX) ((y * (maxX + 1)) + x)
 
 #endif

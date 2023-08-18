@@ -15,35 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
-#include "CANVAS.HPP"
-#include "COLORING.HPP"
-#include "STATBAR.HPP"
-#include "UIHNDLR.HPP"
+#include <stdexcept>
+#include "MACROS.HPP"
 
-#ifndef FILEIO_H
-#define FILEIO_H
+#ifndef EXCEPTS_H
+#define EXCEPTS_H
 
-#define FILE_HEADER "COBALTV2"
-
-class FileHandler {
-	Canvas* canvas;
-	Coloring* coloring;
-	StatusBar* statusBar;
-	UiHandler* uiHandler;
-
+class InvalidFileFormat : public std::exception {
 	public:
-		FileHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef, UiHandler* uiHandlerRef)
-		{
-			this->canvas = canvasRef;
-			this->coloring = coloringRef;
-			this->statusBar = statusBarRef;
-			this->uiHandler = uiHandlerRef;
+		virtual const char* what() const throw() {
+			return INVALID_FILE_MESSAGE;
 		}
-
-		void newDrawing();
-		void saveDrawing();
-		void loadDrawing();
-		bool drawingExists(std::string fileName);
 };
 
 #endif

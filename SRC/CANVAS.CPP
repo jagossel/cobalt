@@ -19,6 +19,7 @@
 #include <CURSES.H>
 #include "DRAWCHAR.HPP"
 #include "CANVAS.HPP"
+#include "MACROS.HPP"
 
 void Canvas::resizeCanvas() {
 	int minX, minY, maxX, maxY;
@@ -168,7 +169,7 @@ void Canvas::drawTypedCharacter(char typedCharacter) {
 	int currentForegroundColor = this->coloring->getCurrentForegroundColor();
 	int currentBackgroundColor = this->coloring->getCurrentBackgroundColor();
 
-	int canvasIndex = CANVAS_INDEX(this->currentCursorY, this->currentCursorX);
+	int canvasIndex = CANVAS_INDEX(this->currentCursorY, this->currentCursorX, this->maximumCursorX);
 	this->drawingCanvas[canvasIndex].character = typedCharacter;
 	this->drawingCanvas[canvasIndex].foregroundColor = currentForegroundColor;
 	this->drawingCanvas[canvasIndex].backgroundColor = currentBackgroundColor;
@@ -180,7 +181,7 @@ void Canvas::drawTypedCharacter(char typedCharacter) {
 }
 
 void Canvas::resetCharacter() {
-	int canvasIndex = CANVAS_INDEX(this->currentCursorY, this->currentCursorX);
+	int canvasIndex = CANVAS_INDEX(this->currentCursorY, this->currentCursorX, this->maximumCursorX);
 	this->drawingCanvas[canvasIndex].character = ' ';
 	this->drawingCanvas[canvasIndex].foregroundColor = 7;
 	this->drawingCanvas[canvasIndex].backgroundColor = 0;
@@ -207,7 +208,7 @@ void Canvas::redrawRegion(int startX, int startY, int endX, int endY) {
 			int yIndex = redrawY - this->minimumCursorY;
 			int xIndex = redrawX - this->minimumCursorX;
 
-			int canvasIndex = CANVAS_INDEX(yIndex, xIndex);
+			int canvasIndex = CANVAS_INDEX(yIndex, xIndex, this->maximumCursorX);
 			int foregroundColor = this->drawingCanvas[canvasIndex].foregroundColor;
 			int backgroundColor = this->drawingCanvas[canvasIndex].backgroundColor;
 

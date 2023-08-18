@@ -22,8 +22,6 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#define CANVAS_INDEX(y, x) ((y * 80) + x)
-
 class Canvas {
 	const int minimumCharacterSetIndex = 0;
 	const int maximumCharacterSetIndex = 9;
