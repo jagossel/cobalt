@@ -46,9 +46,12 @@ void FileHandler::saveDrawing() {
 	if (confirmOverwrite) {
 		FILE* fileHandle = fopen(fileName.c_str(), "wb");
 		if (NULL != fileHandle) {
+			fprintf(fileHandle, FILE_HEADER);
+			fputc(this->canvas->getMinimumCursorY(), fileHandle);
+			fputc(this->canvas->getMaximumCursorY(), fileHandle);
+			fputc(this->canvas->getMinimumCursorX(), fileHandle);
+			fputc(this->canvas->getMaximumCursorX(), fileHandle);
 			for (int i = 0; i < drawingSize; i++) {
-				// For backwards compabitlity with the original BASIC version, convert all
-				// of this data into an unsigned char (should be a BYTE in FreeBASIC).
 				DrawingCharacter drawingCharacter = drawing->at(i);
 				unsigned char character = drawingCharacter.character;
 				unsigned char foregroundColor = drawingCharacter.foregroundColor;

@@ -23,6 +23,8 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
+#define FILE_HEADER "COBALTV2"
+
 class FileHandler {
 	Canvas* canvas;
 	Coloring* coloring;
