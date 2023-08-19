@@ -81,7 +81,6 @@ void FileHandler::saveDrawing() {
 	}
 }
 
-// TODO: Add backwards compatability to the older FreeBASIC version of Cobalt v1.0+
 // TODO: Resize the screen instead of checking the dimensions
 void FileHandler::loadDrawing() {
 	std::string fileName = this->uiHandler->getFileName();
