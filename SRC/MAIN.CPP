@@ -23,6 +23,7 @@
 #include "UIHNDLR.CPP"
 #include "KEYHNDLR.CPP"
 #include "FILEIO.CPP"
+#include "TITLE.CPP"
 
 using namespace std;
 
@@ -37,6 +38,8 @@ int main() {
 	Coloring coloring;
 	Coloring* coloringRef = &coloring;
 	coloringRef->initColors();
+
+	TitleScreen::showTitleScreen();
 
 	Canvas canvas(coloringRef);
 	Canvas* canvasRef = &canvas;
