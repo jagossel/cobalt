@@ -47,30 +47,36 @@ void FileHandler::saveDrawing() {
 	std::string confirmOverwriteMessage = "File, " + fileName + ", exists.  Overwrite?";
 	bool confirmOverwrite = !fileExists || this->uiHandler->getConfirmation(confirmOverwriteMessage);
 	if (confirmOverwrite) {
-		FILE* fileHandle = fopen(fileName.c_str(), "wb");
-		if (NULL != fileHandle) {
-			fprintf(fileHandle, FILE_HEADER);
-			fputc(this->canvas->getMinimumCursorY(), fileHandle);
-			fputc(this->canvas->getMaximumCursorY(), fileHandle);
-			fputc(this->canvas->getMinimumCursorX(), fileHandle);
-			fputc(this->canvas->getMaximumCursorX(), fileHandle);
-			for (int i = 0; i < drawingSize; i++) {
-				DrawingCharacter drawingCharacter = drawing->at(i);
-				unsigned char character = drawingCharacter.character;
-				unsigned char foregroundColor = drawingCharacter.foregroundColor;
-				unsigned char backgroundColor = drawingCharacter.backgroundColor;
+		bool continueSaving =
+			!this->v1DrawingLoaded
+			|| this->uiHandler->getConfirmation("Saving will upgrade the drawing to V2.  Continue?");
 
-				fputc(character, fileHandle);
-				fputc(foregroundColor, fileHandle);
-				fputc(backgroundColor, fileHandle);
+		if (continueSaving) {
+			FILE* fileHandle = fopen(fileName.c_str(), "wb");
+			if (NULL != fileHandle) {
+				fprintf(fileHandle, FILE_HEADER);
+				fputc(this->canvas->getMinimumCursorY(), fileHandle);
+				fputc(this->canvas->getMaximumCursorY(), fileHandle);
+				fputc(this->canvas->getMinimumCursorX(), fileHandle);
+				fputc(this->canvas->getMaximumCursorX(), fileHandle);
+				for (int i = 0; i < drawingSize; i++) {
+					DrawingCharacter drawingCharacter = drawing->at(i);
+					unsigned char character = drawingCharacter.character;
+					unsigned char foregroundColor = drawingCharacter.foregroundColor;
+					unsigned char backgroundColor = drawingCharacter.backgroundColor;
+
+					fputc(character, fileHandle);
+					fputc(foregroundColor, fileHandle);
+					fputc(backgroundColor, fileHandle);
+				}
+
+				fclose(fileHandle);
+
+				std::string message = "Drawing saved: " + fileName;
+				this->uiHandler->showMessage(message);
+			} else {
+				this->uiHandler->showErrorMessage("Cannot save drawing.");
 			}
-
-			fclose(fileHandle);
-
-			std::string message = "Drawing saved: " + fileName;
-			this->uiHandler->showMessage(message);
-		} else {
-			this->uiHandler->showErrorMessage("Cannot save drawing.");
 		}
 	}
 }
@@ -118,6 +124,7 @@ void FileHandler::loadDrawing() {
 	int actualFileSize = fileBuffer.size();
 	if (actualFileSize == version1ExpectedFileSize) {
 		try {
+			this->v1DrawingLoaded = true;
 			DrawingLoaderVersion1 loader(
 				&fileBuffer,
 				minimumCursorY,
@@ -131,6 +138,7 @@ void FileHandler::loadDrawing() {
 		}
 	} else if (actualFileSize == version2ExpectedFileSize) {
 		try {
+			this->v1DrawingLoaded = false;
 			DrawingLoaderVersion2 loader(
 				&fileBuffer,
 				minimumCursorY,

@@ -26,6 +26,7 @@
 #define FILE_HEADER "COBALTV2"
 
 class FileHandler {
+	bool v1DrawingLoaded;
 	Canvas* canvas;
 	Coloring* coloring;
 	StatusBar* statusBar;
@@ -33,6 +34,7 @@ class FileHandler {
 
 	public:
 		FileHandler(Canvas* canvasRef, Coloring* coloringRef, StatusBar* statusBarRef, UiHandler* uiHandlerRef)
+			: v1DrawingLoaded(false)
 		{
 			this->canvas = canvasRef;
 			this->coloring = coloringRef;
