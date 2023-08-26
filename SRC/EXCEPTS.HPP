@@ -28,4 +28,11 @@ class InvalidFileFormat : public std::exception {
 		}
 };
 
+class UnableToOpenFile : public std::exception {
+	public:
+		virtual const char* what() const throw() {
+			return "Unable to open the file.";
+		}
+};
+
 #endif

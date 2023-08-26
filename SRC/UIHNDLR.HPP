@@ -46,6 +46,7 @@ class UiHandler {
 		void toggleExitApplication();
 		void askCharacterSet();
 		void askColors();
+		char askUserInput(std::string dialogMessage, std::string acceptableKeys);
 		void showErrorMessage(std::string errorMessage);
 		void showMessage(std::string message);
 };

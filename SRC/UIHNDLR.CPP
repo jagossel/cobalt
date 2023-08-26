@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  ***/
+#include <algorithm>
 #include <string>
 #include <CURSES.H>
 #include "UIHNDLR.HPP"
@@ -294,6 +295,36 @@ void UiHandler::askColors() {
 	}
 
 	Dialogs::destroyDialog(dialog);
+}
+
+char UiHandler::askUserInput(std::string dialogMessage, std::string acceptableKeys) {
+	std::transform(acceptableKeys.begin(), acceptableKeys.end(), acceptableKeys.begin(), ::toupper);
+	int dialogMessageLength = dialogMessage.length();
+	int dialogWidth = dialogMessageLength + 4;
+
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, dialogWidth, 3);
+
+	wmove(dialog, 1, 2);
+	wattron(dialog, COLOR_PAIR(COLOR_PAIR_INDEX(7, 0)));
+	wattroff(dialog, A_BOLD);
+	wprintw(dialog, dialogMessage.c_str());
+
+	unsigned char result = 0;
+	bool exitDialog = false;
+	while (!exitDialog) {
+		int keyInput = wgetch(dialog);
+		int keyInputUpper = toupper(keyInput);
+		if (acceptableKeys.find_first_of(keyInputUpper) != std::string::npos) {
+			exitDialog = true;
+			result = keyInput;
+		} else if (COBALT_KEY_ESCAPE == keyInput) {
+			exitDialog = true;
+		}
+	}
+
+	Dialogs::destroyDialog(dialog);
+
+	return result;
 }
 
 void UiHandler::showErrorMessage(std::string errorMessage) {

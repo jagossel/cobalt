@@ -23,6 +23,8 @@
 #include "FILEIO.HPP"
 #include "V1LDR.CPP"
 #include "V2LDR.CPP"
+#include "EXPRTANS.CPP"
+#include "EXPRTTXT.CPP"
 #include "MACROS.HPP"
 
 void FileHandler::newDrawing() {
@@ -44,7 +46,7 @@ void FileHandler::saveDrawing() {
 
 	bool fileExists = this->drawingExists(fileName);
 
-	std::string confirmOverwriteMessage = "File, " + fileName + ", exists.  Overwrite?";
+	std::string confirmOverwriteMessage = FILE_EXISTS_MESSAGE(fileName);
 	bool confirmOverwrite = !fileExists || this->uiHandler->getConfirmation(confirmOverwriteMessage);
 	if (confirmOverwrite) {
 		bool continueSaving =
@@ -153,6 +155,43 @@ void FileHandler::loadDrawing() {
 	} else {
 		this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
 		return;
+	}
+}
+
+void FileHandler::exportDrawing() {
+	char exportType = this->uiHandler->askUserInput("Export to (A)NSI or (T)ext?", "AT");
+	if (0 == exportType) return;
+
+	std::string fileName = this->uiHandler->getFileName();
+	if (fileName.length() <= 0) return;
+
+	auto exportDrawing = [&] (DrawingExporter* exporter, std::string fileExtension) {
+		fileName += fileExtension;
+		bool fileExists = this->drawingExists(fileName);
+
+		std::string confirmOverwriteMessage = FILE_EXISTS_MESSAGE(fileName);
+		bool confirmOverwrite = !fileExists || this->uiHandler->getConfirmation(confirmOverwriteMessage);
+		if (confirmOverwrite) {
+			exporter->exportDrawing(fileName);
+		}
+	};
+
+	std::vector<DrawingCharacter>* drawing = this->canvas->getDrawing();
+	int minCurY = this->canvas->getMinimumCursorY();
+	int maxCurY = this->canvas->getMaximumCursorY();
+	int minCurX = this->canvas->getMinimumCursorX();
+	int maxCurX = this->canvas->getMaximumCursorX();
+
+	try {
+		if ('A' == exportType || 'a' == exportType) {
+			AnsiDrawingExporter exporter(drawing, minCurY, maxCurY, minCurX, maxCurX);
+			exportDrawing(&exporter, ".ANS");
+		} else if ('T' == exportType || 't' == exportType) {
+			TextDrawingExporter exporter(drawing, minCurY, maxCurY, minCurX, maxCurX);
+			exportDrawing(&exporter, ".TXT");
+		}
+	} catch (const std::exception& ex) {
+		this->uiHandler->showErrorMessage(ex.what());
 	}
 }
 

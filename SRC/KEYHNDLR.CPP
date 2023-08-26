@@ -62,6 +62,8 @@ void KeyHandler::handleKeyInput(int keyInput) {
 		this->fileHandler->loadDrawing();
 	} else if (COBALT_KEY_CTL_S == keyInput) {
 		this->fileHandler->saveDrawing();
+	} else if (COBALT_KEY_CTL_E == keyInput) {
+		this->fileHandler->exportDrawing();
 	} else if (COBALT_KEY_SHIFT_F2 == keyInput) {
 		this->uiHandler->askCharacterSet();
 	} else if (COBALT_KEY_SHIFT_F3 == keyInput) {
