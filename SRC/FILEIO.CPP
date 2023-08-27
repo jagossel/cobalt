@@ -20,9 +20,11 @@
 #include <cstdio>
 #include <CURSES.H>
 #include "DRAWCHAR.HPP"
+#include "LOADER.HPP"
 #include "FILEIO.HPP"
 #include "V1LDR.CPP"
 #include "V2LDR.CPP"
+#include "EXPORTER.HPP"
 #include "EXPRTANS.CPP"
 #include "EXPRTTXT.CPP"
 #include "MACROS.HPP"
@@ -111,11 +113,6 @@ void FileHandler::loadDrawing() {
 	fclose(fileHandle);
 	fileBuffer.pop_back();
 
-	int minimumCursorY = this->canvas->getMinimumCursorY();
-	int maximumCursorY = this->canvas->getMaximumCursorY();
-	int minimumCursorX = this->canvas->getMinimumCursorX();
-	int maximumCurosrX = this->canvas->getMaximumCursorX();
-
 	// Check 3: Is it the expected file size?
 	// Given how inflexible Cobalt is when it comes to dimensions, both
 	// versions have fixed file sizes.  It is possible to get away with
@@ -123,38 +120,30 @@ void FileHandler::loadDrawing() {
 	int version1ExpectedFileSize = 6000;
 	int version2ExpectedFileSize = 6012;
 	int actualFileSize = fileBuffer.size();
-	if (actualFileSize == version1ExpectedFileSize) {
-		try {
-			this->v1DrawingLoaded = true;
-			DrawingLoaderVersion1 loader(
-				&fileBuffer,
-				minimumCursorY,
-				maximumCursorY,
-				minimumCursorX,
-				maximumCurosrX);
 
-			this->canvas->loadDrawing(loader.loadDrawing());
-		} catch (const std::exception& ex) {
-			this->uiHandler->showErrorMessage(ex.what());
-		}
-	} else if (actualFileSize == version2ExpectedFileSize) {
-		try {
-			this->v1DrawingLoaded = false;
-			DrawingLoaderVersion2 loader(
-				&fileBuffer,
-				minimumCursorY,
-				maximumCursorY,
-				minimumCursorX,
-				maximumCurosrX
-			);
+	auto importDrawing = [&] (DrawingLoader* loader, bool isV1Drawing) {
+		this->v1DrawingLoaded = isV1Drawing;
+		this->canvas->loadDrawing(loader->loadDrawing());
+	};
 
-			this->canvas->loadDrawing(loader.loadDrawing());
-		} catch (const std::exception& ex) {
-			this->uiHandler->showErrorMessage(ex.what());
+	int minCursorY = this->canvas->getMinimumCursorY();
+	int maxCursorY = this->canvas->getMaximumCursorY();
+	int minCursorX = this->canvas->getMinimumCursorX();
+	int maxCurosrX = this->canvas->getMaximumCursorX();
+
+	try {
+		if (actualFileSize == version1ExpectedFileSize) {
+				DrawingLoaderVersion1 loader(&fileBuffer, minCursorY, maxCursorY, minCursorX, maxCurosrX);
+				importDrawing(&loader, true);
+		} else if (actualFileSize == version2ExpectedFileSize) {
+				DrawingLoaderVersion2 loader(&fileBuffer, minCursorY, maxCursorY, minCursorX, maxCurosrX);
+				importDrawing(&loader, false);
+		} else {
+			this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
+			return;
 		}
-	} else {
-		this->uiHandler->showErrorMessage(INVALID_FILE_MESSAGE);
-		return;
+	} catch (const std::exception& ex) {
+		this->uiHandler->showErrorMessage(ex.what());
 	}
 }
 
