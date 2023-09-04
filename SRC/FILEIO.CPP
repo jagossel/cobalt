@@ -27,6 +27,9 @@
 #include "EXPORTER.HPP"
 #include "EXPRTANS.CPP"
 #include "EXPRTTXT.CPP"
+#include "IMPORTER.HPP"
+#include "IMPRTANS.CPP"
+#include "IMPRTTXT.CPP"
 #include "MACROS.HPP"
 
 void FileHandler::newDrawing() {
@@ -93,7 +96,7 @@ void FileHandler::loadDrawing() {
 
 	// Check 1: Does the file exists?
 	if (!this->drawingExists(fileName)) {
-		std::string notFoundMessage = "File not found: " + fileName;
+		std::string notFoundMessage = FILE_NOT_FOUND_MESSAGE(fileName);
 		this->uiHandler->showErrorMessage(notFoundMessage);
 		return;
 	}
@@ -148,7 +151,7 @@ void FileHandler::loadDrawing() {
 }
 
 void FileHandler::exportDrawing() {
-	char exportType = this->uiHandler->askUserInput("Export to (A)NSI or (T)ext?", "AT");
+	char exportType = toupper(this->uiHandler->askUserInput("Export to (A)NSI or (T)ext?", "AT"));
 	if (0 == exportType) return;
 
 	std::string fileName = this->uiHandler->getFileName();
@@ -172,12 +175,67 @@ void FileHandler::exportDrawing() {
 	int maxCurX = this->canvas->getMaximumCursorX();
 
 	try {
-		if ('A' == exportType || 'a' == exportType) {
+		if ('A' == exportType) {
 			AnsiDrawingExporter exporter(drawing, minCurY, maxCurY, minCurX, maxCurX);
 			exportDrawing(&exporter, ".ANS");
-		} else if ('T' == exportType || 't' == exportType) {
+		} else if ('T' == exportType) {
 			TextDrawingExporter exporter(drawing, minCurY, maxCurY, minCurX, maxCurX);
 			exportDrawing(&exporter, ".TXT");
+		}
+	} catch (const std::exception& ex) {
+		this->uiHandler->showErrorMessage(ex.what());
+	}
+}
+
+void FileHandler::importDrawing() {
+	char importType = toupper(this->uiHandler->askUserInput("Import to (A)NSI or (T)ext?", "AT"));
+	if (0 == importType) return;
+
+	std::string fileName = this->uiHandler->getFileName();
+	if (fileName.length() <= 0) return;
+
+	if ('A' == importType) {
+		fileName += ".ANS";
+	} else if ('T' == importType) {
+		fileName += ".TXT";
+	} else return;
+
+	if (!this->drawingExists(fileName)) {
+		std::string notFoundMessage = FILE_NOT_FOUND_MESSAGE(fileName);
+		this->uiHandler->showErrorMessage(notFoundMessage);
+		return;
+	}
+
+	FILE* fileHandle = fopen(fileName.c_str(), "rb");
+	if (NULL == fileHandle) {
+		this->uiHandler->showErrorMessage("Cannod import drawing.");
+		return;
+	}
+
+	std::vector<char> fileBuffer;
+	while (!feof(fileHandle)) {
+		fileBuffer.push_back(fgetc(fileHandle));
+	}
+
+	fclose(fileHandle);
+	fileBuffer.pop_back();
+
+	auto importDrawing = [&] (DrawingImporter* importer) {
+		this->canvas->loadDrawing(importer->importDrawing(&fileBuffer));
+	};
+
+	int minimumCursorY = this->canvas->getMinimumCursorY();
+	int maximumCursorY = this->canvas->getMaximumCursorY();
+	int minimumCursorX = this->canvas->getMinimumCursorX();
+	int maximumCursorX = this->canvas->getMaximumCursorX();
+
+	try {
+		if ('A' == importType) {
+			AnsiDrawingImporter importer(minimumCursorY, maximumCursorY, minimumCursorX, maximumCursorX);
+			importDrawing(&importer);
+		} else if ('T' == importType) {
+			TextDrawingImporter importer(minimumCursorY, maximumCursorY, minimumCursorX, maximumCursorX);
+			importDrawing(&importer);
 		}
 	} catch (const std::exception& ex) {
 		this->uiHandler->showErrorMessage(ex.what());

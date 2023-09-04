@@ -26,6 +26,7 @@
 #define FILE_HEADER "COBALTV2"
 
 #define FILE_EXISTS_MESSAGE(fileName) "File, " + fileName + ", exists.  Overwrite?"
+#define FILE_NOT_FOUND_MESSAGE(fileName) "File not found: " + fileName
 
 class FileHandler {
 	bool v1DrawingLoaded;
@@ -48,6 +49,7 @@ class FileHandler {
 		void saveDrawing();
 		void loadDrawing();
 		void exportDrawing();
+		void importDrawing();
 		bool drawingExists(std::string fileName);
 };
 

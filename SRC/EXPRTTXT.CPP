@@ -20,6 +20,7 @@
 #include "DRAWCHAR.HPP"
 #include "EXPRTTXT.HPP"
 #include "MACROS.HPP"
+#include "EXCEPTS.HPP"
 
 // TODO: Add documentation about stripping color codes
 // TODO: Add documentation about excluding the last line and column

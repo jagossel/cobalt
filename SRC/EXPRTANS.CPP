@@ -61,7 +61,7 @@ void AnsiDrawingExporter::exportDrawing(std::string fileName) {
 					fputc(0x30, fileHandle);
 					fputc(0x3B, fileHandle);
 
-					// Fore re-adding the colore codes since ^[[0m (Escape, Open Square Bracket, 0) resets
+					// For re-adding the color codes since ^[[0m (Escape, Open Square Bracket, 0) resets
 					// the attributes for both bold and color.
 					changeForegroundColor = true;
 					changeBackgroundColor = true;
