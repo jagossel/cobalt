@@ -22,8 +22,6 @@
 #include "MACROS.HPP"
 #include "EXCEPTS.HPP"
 
-// TODO: Add documentation about stripping color codes
-// TODO: Add documentation about excluding the last line and column
 void TextDrawingExporter::exportDrawing(std::string fileName) {
 	if (FILE* fileHandle = fopen(fileName.c_str(), "wb")) {
 		for (int y = this->minimumCursorY; y < this->maximumCursorY; y++) {

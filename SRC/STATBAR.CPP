@@ -70,7 +70,8 @@ void StatusBar::updateStatusBar() {
 	int printCurrentCursorX = currentCursorX + 1;
 	int printCurrentCursorY = currentCursorY + 1;
 	printw(
-		"%02d,%02d%c%02d,%02d%cF1=%c F2=%c F3=%c F4=%c F5=%c F6=%c F7=%c F8=%c F9=%c F10=%c",
+		"SHIFT+F1=HELP%c%02d,%02d%c%02d,%02d%cF1=%c F2=%c F3=%c F4=%c F5=%c F6=%c F7=%c F8=%c F9=%c F10=%c",
+		'\xB3',
 		currentForegroundColor,
 		currentBackgroundColor,
 		'\xB3',

@@ -22,9 +22,6 @@
 #include "EXCEPTS.HPP"
 #include "EXPRTANS.HPP"
 
-// TODO: Add documentation around the lack of background intensity support
-// TODO: Add documentation about EOF/Escape characters being repalced
-// TODO: Add documentation about limitations of exporting to ANSI (sizing specifically)
 void AnsiDrawingExporter::exportDrawing(std::string fileName) {
 	int currentForegroundColor = -1;
 	int currentBackgroundColor = -1;

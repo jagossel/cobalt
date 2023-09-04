@@ -17,11 +17,13 @@
  ***/
 #include <algorithm>
 #include <string>
+#include <vector>
 #include <CURSES.H>
 #include "UIHNDLR.HPP"
 #include "KEYDEF.HPP"
 #include "DIALOGS.CPP"
 #include "MACROS.HPP"
+#include "HELP.HPP"
 
 std::string UiHandler::getFileName() {
 	std::string dialogMessage = "Name w/o Extension: ";
@@ -377,5 +379,76 @@ void UiHandler::showMessage(std::string message) {
 
 	wgetch(dialog);
 
+	Dialogs::destroyDialog(dialog);
+}
+
+void UiHandler::showHelp() {
+	std::vector<std::string> helpText = getHelpText();
+
+	int minimumCursorY = this->canvas->getMinimumCursorY();
+	int maximumCursorY = this->canvas->getMaximumCursorY();
+	int minimumCursorX = this->canvas->getMinimumCursorX();
+	int maximumCursorX = this->canvas->getMaximumCursorX();
+
+	int padHeight = helpText.size();
+	int dialogWidth = maximumCursorX - minimumCursorX + 1;
+	int dialogHeight = maximumCursorY - minimumCursorY + 1;
+	int dialogClientWidth = dialogWidth - 4;
+	int dialogClientHeight = dialogHeight - 2;
+	int dialogClientStartX = minimumCursorX + 2;
+	int dialogClientStartY = minimumCursorY + 1;
+	int dialogClientEndX = maximumCursorX - 2;
+	int dialogClientEndY = maximumCursorY - 1;
+
+	WINDOW* dialog = Dialogs::createDialog(this->canvas, dialogWidth, dialogHeight);
+	wmove(dialog, dialogHeight - 1, 2);
+	wprintw(
+		dialog,
+		" ESC = Exit Dialog %c %c = Scroll Up %c %c = Scroll Down ",
+		0xB3,
+		0x1E,
+		0xB3,
+		0x1F);
+	wrefresh(dialog);
+
+	WINDOW* dialogClient = newpad(padHeight, dialogClientWidth);
+	scrollok(dialogClient, false);
+	keypad(dialogClient, true);
+
+	for (int i = 0; i < padHeight; i++) {
+		std::string helpTextLine = helpText.at(i);
+		wmove(dialogClient, i, 0);
+		wprintw(dialogClient, helpTextLine.c_str());
+	}
+
+	int maxPadPositionY = padHeight - (dialogHeight - 2);
+	int padPositionY = 0;
+
+	bool exitDialog = false;
+	while (!exitDialog) {
+		prefresh(
+			dialogClient,
+			padPositionY,
+			0,
+			dialogClientStartY,
+			dialogClientStartX,
+			dialogClientEndY,
+			dialogClientEndX);
+
+		int inputKey = wgetch(dialogClient);
+		if (KEY_UP == inputKey) {
+			if (padPositionY > 0) {
+				padPositionY--;
+			}
+		} else if (KEY_DOWN == inputKey) {
+			if (padPositionY < maxPadPositionY) {
+				padPositionY++;
+			}
+		} else if (COBALT_KEY_ESCAPE == inputKey) {
+			exitDialog = true;
+		}
+	}
+
+	Dialogs::destroyDialog(dialogClient);
 	Dialogs::destroyDialog(dialog);
 }

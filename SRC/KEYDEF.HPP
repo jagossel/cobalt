@@ -19,6 +19,7 @@
 #define KEYDEF_H
 
 // There are some keys that are not working in PDCurses; here, we are going to define our own.
+#define COBALT_KEY_SHIFT_F1  KEY_F(13)
 #define COBALT_KEY_SHIFT_F2  KEY_F(14)
 #define COBALT_KEY_SHIFT_F3  KEY_F(15)
 #define COBALT_KEY_CTL_E     0x05

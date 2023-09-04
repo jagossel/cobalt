@@ -49,6 +49,7 @@ class UiHandler {
 		char askUserInput(std::string dialogMessage, std::string acceptableKeys);
 		void showErrorMessage(std::string errorMessage);
 		void showMessage(std::string message);
+		void showHelp();
 };
 
 #endif
